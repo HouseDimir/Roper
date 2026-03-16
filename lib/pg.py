@@ -104,7 +104,18 @@ class cube():
                                             operand = v
                                         else:
                                             pass
-
+                                if operand == '>=':
+                                    #>=
+                                elif operand == '>':
+                                    #>
+                                elif operand == '=':
+                                    #=
+                                elif operand == '<':
+                                    #<
+                                elif operand == '<=':
+                                    #<=
+                                else:
+                                    #error message for invalid operand
                             elif k == '-gc':
                                 #GameChanger r[33]
                                 for arg_gc in output['-gc']:

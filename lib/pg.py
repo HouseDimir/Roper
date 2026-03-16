@@ -6,7 +6,7 @@ import random
 #UUIDs card[79]
 
 ##
-#Prepare for consistent cube generation
+#prepare for consistent cube generation
 class cube():
     def __init__(self, inst_id):
         #basic identifying information
@@ -15,6 +15,7 @@ class cube():
         self.verfd: bool = False
         self.draft: bool = False
         self.populated: bool = False
+        self.purge: bool = False
         self.max_cards: int = 360
         self.max_packs: int = self.max_cards/15
         source_list = ['bin/cards_black.csv',
@@ -28,10 +29,12 @@ class cube():
         self.cube_list = []
         self.sorted_list = {}
 
-    #Add card to the cube
-    def add_card(self, card_id):
-        self.cube_list.append(card_id)
-        return self.cube_list
+    #add card to the cube path file and card UUID to cube.cube_list
+    def add_card(self, card):
+        with open(self.path, 'w', encoding='utf-8') as cube:
+            cube.write(card)
+        self.cube_list.append(card[79])
+        return
 
     #generate the cube_list to be sorted through by the pack generator as requested
     def generate(self, output):
@@ -58,44 +61,41 @@ class cube():
         -t    Space deliniated keywords; Declare the card types you wish to search for; May not be compatible with --kw in some instances
         '''
         exclusive = False
-        #Explicit type check all values
+        #explicit type check all values
         if output not dict:
             raise TypeError(f"Improper argument type passed to _sourceIter(): "+output.type)
         elif k in output not str:
             raise TypeError(f"Improper argument typed passed from nParse.parse_input(): "+arg.type)
         else:
-            #rework to respect exclusivity
-            #Iterate across sorted card lists
+            #iterate across sorted card lists
             for i in source_list:
                 i_path = str(cwd) + i
-                with open(i_path, 'r', newline='', encoding='utf-8') as gen:
-                    #Iterate over each card in each list
-                    for r in gen:
+                with open(i_path, 'r', newline='', encoding='utf-8') as source:
+                    #iterate over each card in each list
+                    for card in source:
                         operand = ''
-                        if 'excl' in output.keys():
-                            exclusive = True
-                        if exclusive:
+                        if '-excl' in output.keys():
+                            excl = True
+                        if excl:
+                            #exclusivity handling
+                            pass
+                        if k == '-gc':
+                            #gameChanger card[33]
                             pass
                         for  k in output.keys():
-                            #Compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
+                            #compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
                             if k == '-kw':
-                                #Keywords r[44]
+                                #keywords card[44]
                                 for arg_kw in output['-kw']:
-                                    if arg_kw in r[44]:
-                                        with open(str(cwd)+'bin/pcan.csv', 'w', newline='', encoding='utf8') as pcan:
-                                                pcan.write(r)
-                                                pcan.flush()
-                                                pcan.close()
+                                    if arg_kw in card[44]:
+                                        self.add_card(card)
                             elif k == '-s':
-                                #Set Codes r[68]
+                                #set codes card[68]
                                 for arg_set in output['-s']:
-                                    if arg_set in r[68]:
-                                        with open(str(cwd)+'bin/pcan.csv', 'w', newline='', encoding='utf-8') as pcan:
-                                            pcan.write(r)
-                                            pcan.flush()
-                                            pcan.close()
+                                    if arg_set in card[68]:
+                                        self.add_card(card)
                             elif k == '-mv':
-                                #Mana Value r[]
+                                #mana value card[51]
                                 for v in output['-mv']:
                                     try int(v):
                                         digit = int(v)
@@ -106,48 +106,48 @@ class cube():
                                             pass
                                 if operand == '>=':
                                     #>=
+                                    if card[51] >= digit:
+                                        self.add_card(card)
                                 elif operand == '>':
                                     #>
+                                    if card[51] > digit:
+                                        self.add_card(card)
                                 elif operand == '=':
                                     #=
+                                    if card[51] == digit:
+                                        self.add_card(card)
                                 elif operand == '<':
                                     #<
+                                    if card[51] < digit:
+                                        self.add_card(card)
                                 elif operand == '<=':
                                     #<=
+                                    if card[51] <= digit:
+                                        self.add_card(card)
                                 else:
                                     #error message for invalid operand
-                            elif k == '-gc':
-                                #GameChanger r[33]
-                                for arg_gc in output['-gc']:
-                                    if arg_gc:
-                                        if r[33]:
-                                            with open(str(cwd)+'bin/pcan.csv', 'w', newline='', encoding='utf8') as pcan:
-                                                pcan.write(r)
-                                                pcan.flush()
-                                                pcan.close()
                             elif k == '-subt':
-                                #Subtype r[]
+                                #subtype card[73]
                                 pass
                             elif k == '-supt':
-                                #Supertype r[]
+                                #supertype card[74]
                                 pass
                             elif k == '-t':
-                                #Type r[77]
+                                #type card[77]
                                 for arg_t in output['-t']:
                                     if arg_t in r[77]:
-                                        with open(str(cwd)+'bin/pcan.csv', 'w', newline='', encoding='utf-8') as pcan:
-                                            pcan.write(r)
-                                            pcan.flush()
-                                            pcan.close()
+                                        self.add_card(card)
                             else:
-                                #Handle unexpected kwargs
+                                #handle unexpected kwargs
                                 return ValueError("Cubitrice did not recognize the argument you passed "+str(arg))
                 else:
                     raise ValueError(f'Incorrect command passed to {self}.generate()')
+        if len(self.cube_list) > self.max_cards:
+            self.purge = True
         self.populated = True
-        return self.populated
+        return
 
-    #List the various cards in the cube
+    #list the various cards in the cube
     def list_cards(self):
         with open(self.path, 'r', encoding='utf-8', newline='') as cube:
             for line in cube:
@@ -182,14 +182,33 @@ class cube():
         self.sorted_list['mythic']: mythic
         return self.sorted_list
 
-    #Remove cards from the pack card list
+    #remove cards from the cube card list, cube sorted list, and cube path file
     def remove_card(self, card_id):
+        #init list to track all cards from cube.path file
+        cards = []
+        #remove the UUID from the cube list
         for cid in self.cube_list:
             if card_id == cid:
                 self.cube_list.remove(cid)
-        return self.cube_list
+        #remove the UUID from the sorted list
+        for cid in self.sorted_list:
+            if card_id == cid:
+                self.sorted_list.remove(cid)
+        #pack the cube.path file into the cards list
+        with open(self.path, 'r', encoding='utf-8') as cube:
+            for card in cube:
+                card = cube.readline()
+                cards.append(card)
+        #find the target card and delete it
+        for card in cards:
+            if card[79] == card_id:
+                cards.remove(card)
+        #write the remaining data to the cube.path file
+        with open(self.path, 'w', encoding='utf-8') as cube:
+            cube.write(cards)
+        return
 
-    #Select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
+    #select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
     def replace_card(self, [name1, replace1], [name2, replace2], *args):
         for n in range(len(self.replaceCard[args])):
             for cid in self.cube_list:
@@ -202,7 +221,7 @@ class cube():
 
 
 ##
-#Prepare for consistent pack generation across many iterations
+#prepare for consistent pack generation across many iterations
 class pack():
     def __init__(self, inst_id):
         #basic identifying information
@@ -228,7 +247,7 @@ class pack():
         self.common_counter_ratio = ((self.common_ratio)*self.max_cards)
         self.uncommon_counter_ratio = ((self.uncommon_ratio+common_ratio)*self.max_cards)
         self.mythicrare__counter_ratio = ((1-(self.mythicrare_ratio))*self.max_cards)
-        #pack generation variables
+        #distribution constraint variables
         self.color_counter = {'B':10,
                      'U':10,
                      'G':10,
@@ -268,7 +287,7 @@ class pack():
         self.pack_list = []
         self.sorted_list = []
 
-    #Add card to the pack file and list. card must be open.readline() object from csv file
+    #add card to the pack file and list. card must be open.readline() object from csv file
     def add_card(self, card):
             with open(self.path, 'w', encoding='utf-8') as pack:
                 pack.write(card)
@@ -277,7 +296,7 @@ class pack():
             self.pack_list.append(card[79])            
             return self.pack_list
 
-    #Generate the pack randomly from the assigned cube.
+    #generate the pack randomly from the assigned cube.
     def generate(self, cube, rare, ratio_c, ratio_t):
         #cube should be class cube() object, rare should be bool, ratio_c should be bool, ratio_t should be bool
         #reset counters
@@ -333,8 +352,7 @@ class pack():
                 success = False
                 #type check the variables
                 if cube.type() == 'class pg.cube' and rare.type() == bool:
-                    ##rarity, Type, and Color Constraints
-                    #all 3 constraints are tracked
+                    #rarity, type, and color constraints
                     if rare and ratio_c and ratio_t:
                         #read the cube file
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
@@ -418,7 +436,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##Rarity and Type Constraints
+                    ##rarity and type constraints
                     elif rare and not ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -447,7 +465,7 @@ class pack():
                                         self.add_card(card)
                                         success = True  
                             cube.close()
-                    ##Rarity and Color Constraints
+                    ##rarity and color Constraints
                     elif rare and ratio_c and not ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -513,7 +531,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##Color and Type Restraints
+                    ##color and type Restraints
                     elif not rare and ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -581,7 +599,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##Color Constraints only
+                    ##color constraints only
                     elif not rare and ratio_c and not ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -609,7 +627,8 @@ class pack():
                                             else:
                                                 self.color_counter[card[10]] += 1
                                             self.add_card(card)
-                                            success = True                                 #run multicolored verifications
+                                            success = True
+                                #run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in st.mc:
@@ -646,7 +665,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##Type Constraints only
+                    ##type constraints only
                     elif not rare and not ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -668,7 +687,7 @@ class pack():
                                         self.add_card(card)
                                         success = True  
                             cube.close()
-                    ##No Distribution Constraints, fairly resource intensive
+                    ##no distribution constraints, fairly resource intensive
                     elif not rare and not ratio_c and not ratio_t:
                         random = random.random(0, len(cards))
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
@@ -684,7 +703,7 @@ class pack():
                 if success:
                     n+=1
             
-    #Return True if color constraint met
+    #return true if color constraint met
     def get_color_bool(self):
         for k in self.color_dis:
             if self.color_counter[k] >= self.color_ratio_min and <= color_ratio_max:
@@ -709,7 +728,7 @@ class pack():
                 return False
         return True
 
-    #Return True if type constraint met
+    #return true if type constraint met
     def get_type_bool(self):
         if self.type_counter['creature'] >= self.creature_card_ratio_min:
             self.type_dis['Creature'] = True
@@ -722,7 +741,7 @@ class pack():
                 return False
         return True
 
-    #Count and display some identifying information about the packs generated
+    #count and display some identifying information about the packs generated
     def list_cards(self):
         with open(self.path, 'r', encoding='utf-8', newline='') as pack:
             for line in pack:
@@ -732,7 +751,7 @@ class pack():
     #packList sorting by rarity, then alphabetical
     def list_sort(self):
         pass
-        #Create separate lists of cards by rarity then populate
+        #create separate lists of cards by rarity then populate
         common = []
         uncommon = []
         rare = []
@@ -758,14 +777,14 @@ class pack():
         self.sorted_list['mythic']: mythic
         return self.sorted_list
         
-    #Remove cards from the pack card list
+    #remove cards from the pack card list
     def remove_card(self, card_id):
         for cid in self.pack_list:
             if card_id == cid:
                 self.pack_list.remove(cid)
         return self.pack_list
 
-    #Select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
+    #select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
     def replace_card(self, [name1, replace1], [name2, replace2], *args):
         for n in range(len(self.replace_card[args])):
             for cid in self.pack_list:

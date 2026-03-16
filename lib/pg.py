@@ -1,17 +1,7 @@
 import os
 import st
+import cli
 import random
-
-source_list = [
-    'bin/cards_black.csv',
-    'bin/cards_blue.csv',
-    'bin/cards_colorless.csv',
-    'bin/cards_green.csv',
-    'bin/cards_multicolor.csv',
-    'bin/cards_nbl.csv',
-    'bin/cards_red.csv',
-    'bin/cards_white.csv'
-    ]
 
 #UUIDs card[79]
 
@@ -19,6 +9,7 @@ source_list = [
 #Prepare for consistent cube generation
 class cube():
     def __init__(self, inst_id):
+        #basic identifying information
         self.inst_id = str('cube_', inst_id)
         self.path: str = path
         self.verfd: bool = False
@@ -26,6 +17,14 @@ class cube():
         self.populated: bool = False
         self.max_cards: int = 360
         self.max_packs: int = self.max_cards/15
+        source_list = ['bin/cards_black.csv',
+                        'bin/cards_blue.csv',
+                        'bin/cards_colorless.csv',
+                        'bin/cards_green.csv',
+                        'bin/cards_multicolor.csv',
+                        'bin/cards_nbl.csv',
+                        'bin/cards_red.csv',
+                        'bin/cards_white.csv']
         self.cube_list = []
         self.sorted_list = {}
 
@@ -72,11 +71,12 @@ class cube():
                 with open(i_path, 'r', newline='', encoding='utf-8') as gen:
                     #Iterate over each card in each list
                     for r in gen:
-                        if output['-excl']:
+                        operand = ''
+                        if 'excl' in output.keys():
                             exclusive = True
                         if exclusive:
                             pass
-                        k in output.keys():
+                        for  k in output.keys():
                             #Compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
                             if k == '-kw':
                                 #Keywords r[44]
@@ -96,7 +96,15 @@ class cube():
                                             pcan.close()
                             elif k == '-mv':
                                 #Mana Value r[]
-                                pass
+                                for v in output['-mv']:
+                                    try int(v):
+                                        digit = int(v)
+                                    except ValueError:
+                                        if v in cli.sym:
+                                            operand = v
+                                        else:
+                                            pass
+
                             elif k == '-gc':
                                 #GameChanger r[33]
                                 for arg_gc in output['-gc']:

@@ -29,6 +29,73 @@ class cube():
                         'bin/cards_white.csv']
         self.cube_list = []
         self.sorted_list = {}
+        #defines the lists to organize the data by Color Identity
+        self.bl = []
+        self.gl = []
+        self.ll = []
+        self.ml = []
+        self.rl = []
+        self.ul = []
+        self.wl = []
+        self.xl = []
+        self.lc = [bl, gl, ll, ml, rl, ul, wl, xl]
+
+        #defines the various CSV values for multicolor cards
+        self.mc = ["B, G, R, U, W",
+                    "B, G, R, U",
+                    "G, R, U, W",
+                    "B, R, U, W",
+                    "B, G, U, W",
+                    "B, G, R, W",
+                    "B, G, R",
+                    "B, G, U",
+                    "B, G, W",
+                    "B, R, U",
+                    "B, R, W",
+                    "B, U, W",
+                    "G, R, U",
+                    "G, R, W",
+                    "G, U, W",
+                    "G, U, B",
+                    "R, U, W",
+                    "R, U, G",
+                    "R, U, B",
+                    "R, G, B",
+                    "U, R, G",
+                    "U, B, G",
+                    "U, G, W",
+                    "U, R, W",
+                    "B, G",
+                    "B, R",
+                    "B, U",
+                    "B, W",
+                    "G, R",
+                    "G, U",
+                    "G, W",
+                    "G, B",
+                    "R, U",
+                    "R, W",
+                    "R, B",
+                    "R, G",
+                    "U, W",
+                    "U, B",
+                    "U, G",
+                    "U, R",
+                    "W, B",
+                    "W, G",
+                    "W, R",
+                    "W, U"]
+
+        #define the file paths for the sorted card files
+        self.bfp = str(cwd) + '/bin/cards_black.csv' 
+        self.gfp = str(cwd) + '/bin/cards_green.csv'
+        self.lfp = str(cwd) + '/bin/cards_nbl.csv'
+        self.mfp = str(cwd) + '/bin/cards_multi.csv'
+        self.rfp = str(cwd) + '/bin/cards_red.csv'
+        self.ufp = str(cwd) + '/bin/cards_blue.csv'
+        self.wfp = str(cwd) + '/bin/cards_white.csv'
+        self.xfp = str(cwd) + '/bin/cards_colorless.csv'
+        self.sl = [bfp, gfp, lfp, mfp, rfp, ufp, wfp, xfp]
 
     #add card to the cube path file and card UUID to cube.cube_list
     def add_card(self, card):
@@ -218,6 +285,94 @@ class cube():
                 else:
                     self.add_card(cid)
         return self.cube_list
+
+    def source_sort(self, source_path):
+        #counts each iteration when sorting the cards into the respective files
+        rc = 0
+        #opens and loads the csv into a nested set of lists to process
+        try:
+            with open(source_path, 'r', newline='', encoding='utf-8') as cards:
+                r = csv.reader(cards)
+                for l in r:
+                    if 'Basic Land' in l[77]:
+                        pass
+                    else:
+                        if not l[77] == 'Land':
+                            if l[10] == 'B':
+                                bl.append(l)
+                            elif l[10] == 'G':
+                                gl.append(l)
+                            elif l[10] == 'R':
+                                rl.append(l)
+                            elif l[10] == 'U':
+                                ul.append(l)
+                            elif l[10] == 'W':
+                                wl.append(l)
+                            elif l[10] == '':
+                                xl.append(l)
+                            elif l[10] in mc: 
+                                ml.append(l)
+                            elif l[10] == 'colors':
+                                pass
+                            else:
+                                if debug:
+                                    print(l[10])
+                                    print(l[52])
+                                print("Found unexpected value in card type field. Please refresh source data as it may be corrupted.")
+                                raise ValueError()
+                        else:
+                            ll.append(l)
+        #exception handling to ensure there is a file for the cards to go to                    
+        except FileNotFoundError:
+            st._cupd()
+            with open(cfp, 'r', newline='', encoding='utf-8') as cards:
+                r = csv.reader(cards)
+                for l in r:
+                    if 'Basic Land' in l[77]:
+                        pass
+                    else:
+                        if not l[77] == 'Land':
+                            if l[10] == 'B':
+                                bl.append(l)
+                            elif l[10] == 'G':
+                                gl.append(l)
+                            elif l[10] == 'R':
+                                rl.append(l)
+                            elif l[10] == 'U':
+                                ul.append(l)
+                            elif l[10] == 'W':
+                                wl.append(l)
+                            elif l[10] == '':
+                                xl.append(l)
+                            elif l[10] in mc:
+                                ml.append(l)
+                            else:
+                                if debug:
+                                    print(l[10])
+                                    print(l[52])
+                                print("Found unexpected value in card type field. Please refresh source data, as it may be corrupted.")
+                                raise ValueError()
+                        else:
+                            ll.append(l)
+        #check to see if the named files exist and deletes them before proceeding
+        for n in range(len(sl)):
+            p = sl[n]
+            l = lc[n]
+            if os.path.exists(p):
+                os.remove(p)
+                with open(p, 'w', newline='', encoding='utf-8') as sort:
+                    w = csv.writer(sort)
+                    for c in l:
+                        w.writerow(c)
+                        print('Finished sorting row ' +str(rc))
+                        rc += 1
+            else:
+               with open(p, 'w', newline='', encoding='utf-8') as sort:
+                w = csv.writer(sort)
+                for c in l:
+                    w.writerow(c)
+                    print('finished sorting row ' + str(rc))
+                    rc += 1
 ##
 
 

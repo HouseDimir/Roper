@@ -9,36 +9,26 @@ import requests
 import platform
 import subprocess
 
-#defines the mtgjson URL to query for All Printings
-cardp = 'https://mtgjson.com/api/v5/csv/'
-cardf = 'https://mtgjson.com/api/v5/csv/cards.csv'
-
-#defines the file name for the saved file
-ccsv = 'cards.csv'
-
-
-#file path for cards.csv
-cfp = str(cwd) + '/bin/' + str(ccsv)
-#iefines the number of tests and where the packets are sent.
-#iterate through for most consistent results.
-dest_dict = {
-    '1':'google.com',
-    '2':'4.2.2.2',
-    '3':'8.8.4.4',
-    '4':'4.2.2.2',
-    '5':'8.8.8.8',
-    '6':'4.2.2.1'
-    }
-fp = str(cwd) + '/bin/' + str(ccsv)
-updprompt = False
-
-
 class smartjack():
     def __init__(self):
-        self.dest_dict = {}
+        self.dest_dict = {'1':'google.com',
+                    '2':'4.2.2.2',
+                    '3':'8.8.4.4',
+                    '4':'4.2.2.2',
+                    '5':'8.8.8.8',
+                    '6':'4.2.2.1'}
         #gets the current working directory for file handling
         self.cwd = os.getcwd()
         self.dest_file_path = []
+        #defines the mtgjson URL to query for All Printings
+        self.cardp = 'https://mtgjson.com/api/v5/csv/'
+        self.cardf = 'https://mtgjson.com/api/v5/csv/cards.csv'
+
+        #defines the file name for the saved file
+        self.ccsv = 'cards.csv'
+        self.fp = str(cwd) + '/bin/' + str(ccsv)
+        #file path for cards.csv
+        self.cfp = str(cwd) + '/bin/' + str(ccsv)
 
 
     def get_dest_filepath(self):

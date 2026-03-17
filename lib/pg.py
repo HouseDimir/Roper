@@ -7,10 +7,10 @@ import random
 #UUIDs card[79]
 
 ##
-#prepare for consistent cube generation
+# Prepare for consistent cube generation
 class cube():
     def __init__(self, inst_id):
-        #basic identifying information
+        # Basic identifying information
         self.inst_id = str('cube_', inst_id)
         self.path: str = path
         self.verfd: bool = False
@@ -29,7 +29,7 @@ class cube():
                         'bin/cards_white.csv']
         self.cube_list = []
         self.sorted_list = {}
-        #defines the lists to organize the data by Color Identity
+        # Defines the lists to organize the data by Color Identity
         self.bl = []
         self.gl = []
         self.ll = []
@@ -40,7 +40,7 @@ class cube():
         self.xl = []
         self.lc = [bl, gl, ll, ml, rl, ul, wl, xl]
 
-        #defines the various CSV values for multicolor cards
+        # Defines the various CSV values for multicolor cards
         self.mc = ["B, G, R, U, W",
                     "B, G, R, U",
                     "G, R, U, W",
@@ -86,7 +86,7 @@ class cube():
                     "W, R",
                     "W, U"]
 
-        #define the file paths for the sorted card files
+        # Define the file paths for the sorted card files
         self.bfp = str(cwd) + '/bin/cards_black.csv' 
         self.gfp = str(cwd) + '/bin/cards_green.csv'
         self.lfp = str(cwd) + '/bin/cards_nbl.csv'
@@ -97,16 +97,16 @@ class cube():
         self.xfp = str(cwd) + '/bin/cards_colorless.csv'
         self.sl = [bfp, gfp, lfp, mfp, rfp, ufp, wfp, xfp]
 
-    #add card to the cube path file and card UUID to cube.cube_list
+    # Add card to the cube path file and card UUID to cube.cube_list
     def add_card(self, card):
         with open(self.path, 'w', encoding='utf-8') as cube:
             cube.write(card)
         self.cube_list.append(card[79])
         return
 
-    #generate the cube_list to be sorted through by the pack generator as requested
+    # Generate the cube_list to be sorted through by the pack generator as requested
     def generate(self, output):
-        '''Iterate through card source files and create a list of all cards
+        """Iterate through card source files and create a list of all cards
         that match the supplied arguments.
 
         Required Arguments
@@ -127,43 +127,43 @@ class cube():
         -sbt    Space deliniated Keywords; Declare subtypes you wish to search for
         -spt    Space deliniated Keywords; Niche; Declare supertypes you wish to search for
         -t    Space deliniated keywords; Declare the card types you wish to search for; May not be compatible with --kw in some instances
-        '''
+        """
         exclusive = False
-        #explicit type check all values
+        # Explicit type check all values
         if output not dict:
             raise TypeError(f"Improper argument type passed to _sourceIter(): "+output.type)
         elif k in output not str:
             raise TypeError(f"Improper argument typed passed from nParse.parse_input(): "+arg.type)
         else:
-            #iterate across sorted card lists
+            # Iterate across sorted card lists
             for i in source_list:
                 i_path = str(cwd) + i
                 with open(i_path, 'r', newline='', encoding='utf-8') as source:
-                    #iterate over each card in each list
+                    # Iterate over each card in each list
                     for card in source:
                         operand = ''
                         if '-excl' in output.keys():
                             excl = True
                         if excl:
-                            #exclusivity handling
+                            # Exclusivity handling
                             pass
                         if k == '-gc':
-                            #gameChanger card[33]
+                            # GameChanger card[33]
                             pass
                         for  k in output.keys():
-                            #compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
+                            # Compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
                             if k == '-kw':
-                                #keywords card[44]
+                                # Keywords card[44]
                                 for arg_kw in output['-kw']:
                                     if arg_kw in card[44]:
                                         self.add_card(card)
                             elif k == '-s':
-                                #set codes card[68]
+                                # Set codes card[68]
                                 for arg_set in output['-s']:
                                     if arg_set in card[68]:
                                         self.add_card(card)
                             elif k == '-mv':
-                                #mana value card[51]
+                                # Mana value card[51]
                                 for v in output['-mv']:
                                     try int(v):
                                         digit = int(v)
@@ -173,40 +173,40 @@ class cube():
                                         else:
                                             pass
                                 if operand == '>=':
-                                    #>=
+                                    # >=
                                     if card[51] >= digit:
                                         self.add_card(card)
                                 elif operand == '>':
-                                    #>
+                                    # >
                                     if card[51] > digit:
                                         self.add_card(card)
                                 elif operand == '=':
-                                    #=
+                                    # =
                                     if card[51] == digit:
                                         self.add_card(card)
                                 elif operand == '<':
-                                    #<
+                                    # <
                                     if card[51] < digit:
                                         self.add_card(card)
                                 elif operand == '<=':
-                                    #<=
+                                    # <=
                                     if card[51] <= digit:
                                         self.add_card(card)
                                 else:
-                                    #error message for invalid operand
+                                    # Error message for invalid operand
                             elif k == '-subt':
-                                #subtype card[73]
+                                # Subtype card[73]
                                 pass
                             elif k == '-supt':
-                                #supertype card[74]
+                                # Supertype card[74]
                                 pass
                             elif k == '-t':
-                                #type card[77]
+                                # Type card[77]
                                 for arg_t in output['-t']:
                                     if arg_t in r[77]:
                                         self.add_card(card)
                             else:
-                                #handle unexpected kwargs
+                                # Handle unexpected kwargs
                                 return ValueError("Cubitrice did not recognize the argument you passed "+str(arg))
                 else:
                     raise ValueError(f'Incorrect command passed to {self}.generate()')
@@ -215,24 +215,24 @@ class cube():
         self.populated = True
         return
 
-    #list the various cards in the cube
+    # List the various cards in the cube
     def list_cards(self):
         with open(self.path, 'r', encoding='utf-8', newline='') as cube:
             for line in cube:
                 line = pack.readline()
                 print('name: '+line[52]+', '+'color(s): '+line[10]+', '+'type: '+line[77])
 
-    #cube_list sorting by rarity, then alphabetical
+    # Sorting list of cards by rarity, then alphabetical
     def list_sort(self):
-        #Create separate lists of cards by rarity then populate
+        # Create separate lists of cards by rarity then populate
         common = []
         uncommon = []
         rare = []
         mythic =[]
         with open(self.path, 'r', encoding='utf-8') as cards:
             for cid in self.cube_list:
-                #check the rarity of each card and append it to the appropriate list
-                    for n in range(len(cards)):
+                # Check the rarity of each card and append it to the appropriate list
+                    for num in range(len(cards)):
                         line = cards.readline()
                         if cid in line and line[64] == 'common':
                             common.append(cid)
@@ -250,46 +250,50 @@ class cube():
         self.sorted_list['mythic']: mythic
         return self.sorted_list
 
-    #remove cards from the cube card list, cube sorted list, and cube path file
+    # Remove cards from the cube card list, cube sorted list, and cube path file
     def remove_card(self, card_id):
-        #init list to track all cards from cube.path file
+        # Init list to track all cards from cube.path file
         cards = []
-        #remove the UUID from the cube list
+        # Remove the UUID from the cube list
         for cid in self.cube_list:
             if card_id == cid:
                 self.cube_list.remove(cid)
-        #remove the UUID from the sorted list
+        # Remove the UUID from the sorted list
         for cid in self.sorted_list:
             if card_id == cid:
                 self.sorted_list.remove(cid)
-        #pack the cube.path file into the cards list
+        # Pack the cube.path file into the cards list
         with open(self.path, 'r', encoding='utf-8') as cube:
             for card in cube:
                 card = cube.readline()
                 cards.append(card)
-        #find the target card and delete it
+        # Find the target card and delete it
         for card in cards:
             if card[79] == card_id:
                 cards.remove(card)
-        #write the remaining data to the cube.path file
+        # Write the remaining data to the cube.path file
         with open(self.path, 'w', encoding='utf-8') as cube:
             cube.write(cards)
         return
 
-    #select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
+    # Select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
     def replace_card(self, [name1, replace1], [name2, replace2], *args):
-        for n in range(len(self.replaceCard[args])):
+        for num in range(len(self.replaceCard[args])):
             for cid in self.cube_list:
-                if cid == n[n]:
+                # Rework this????
+                #
+                #
+                #
+                if cid == n[num]:
                     self.remove_card(cid)
                 else:
                     self.add_card(cid)
         return self.cube_list
 
     def source_sort(self, source_path):
-        #counts each iteration when sorting the cards into the respective files
+        # Counts each iteration when sorting the cards into the respective files
         rc = 0
-        #opens and loads the csv into a nested set of lists to process
+        # Opens and loads the csv into a nested set of lists to process
         try:
             with open(source_path, 'r', newline='', encoding='utf-8') as cards:
                 r = csv.reader(cards)
@@ -322,7 +326,7 @@ class cube():
                                 raise ValueError()
                         else:
                             ll.append(l)
-        #exception handling to ensure there is a file for the cards to go to                    
+        # Exception handling to ensure there is a file for the cards to go to                    
         except FileNotFoundError:
             st._cupd()
             with open(cfp, 'r', newline='', encoding='utf-8') as cards:
@@ -354,10 +358,10 @@ class cube():
                                 raise ValueError()
                         else:
                             ll.append(l)
-        #check to see if the named files exist and deletes them before proceeding
-        for n in range(len(sl)):
-            p = sl[n]
-            l = lc[n]
+        # Check to see if the named files exist and deletes them before proceeding
+        for num in range(len(sl)):
+            p = sl[num]
+            l = lc[num]
             if os.path.exists(p):
                 os.remove(p)
                 with open(p, 'w', newline='', encoding='utf-8') as sort:
@@ -377,15 +381,15 @@ class cube():
 
 
 ##
-#prepare for consistent pack generation across many iterations
+# Prepare for consistent pack generation across many iterations
 class pack():
     def __init__(self, inst_id):
-        #basic identifying information
+        # Basic identifying information
         self.inst_id = str('pack_', inst_id)
         self.path: str = path
         self.verfd: bool = False
         self.draft: bool = True
-        #max cards and various distribution ratios
+        # Max cards and various distribution ratios
         self.max_cards: int = 15
         self.color_ratio_min = 1/15
         self.color_ratio_max = 4/15
@@ -403,7 +407,7 @@ class pack():
         self.common_counter_ratio = ((self.common_ratio)*self.max_cards)
         self.uncommon_counter_ratio = ((self.uncommon_ratio+common_ratio)*self.max_cards)
         self.mythicrare__counter_ratio = ((1-(self.mythicrare_ratio))*self.max_cards)
-        #distribution constraint variables
+        # Distribution constraint variables
         self.color_counter = {'B':10,
                      'U':10,
                      'G':10,
@@ -443,7 +447,7 @@ class pack():
         self.pack_list = []
         self.sorted_list = []
 
-    #add card to the pack file and list. card must be open.readline() object from csv file
+    # Add card to the pack file and list. card must be open.readline() object from csv file
     def add_card(self, card):
             with open(self.path, 'w', encoding='utf-8') as pack:
                 pack.write(card)
@@ -452,25 +456,25 @@ class pack():
             self.pack_list.append(card[79])            
             return self.pack_list
 
-    #generate the pack randomly from the assigned cube.
+    # Generate the pack randomly from the assigned cube.
     def generate(self, cube, rare, ratio_c, ratio_t):
-        #cube should be class cube() object, rare should be bool, ratio_c should be bool, ratio_t should be bool
-        #reset counters
-        n = 0
+        # Cube should be class cube() object, rare should be bool, ratio_c should be bool, ratio_t should be bool
+        # Reset counters
+        num = 0
         for k in self.color_counter:
             self.color_counter[k] = 0
         for k in self.rarity_counter:
             self.self.rarity_counter[k]
         for k in type_counter:
             self.type_counter[k] = 0
-        #toggle distribution verification flags
+        # Toggle distribution verification flags
         if not rare:
             self.rarity_bool = True
         if not ratio_c:
             self.color_bool = True
         if not ratio_t:
             self.type_bool = True
-        #random pack generation resource population
+        # Random pack generation resource population
         if self.color_bool and self.rarity_bool and self.type_bool:
             with open(self.cube.path,  'r', encoding='utf-8') as cube:
                 cards = []
@@ -478,15 +482,15 @@ class pack():
                     card = cube.readline()
                     cards.append(card)
                 cube.close()
-        #run until all constraints flags true
+        # Run until all constraints flags true
         while not color_bool or not type_bool or not rare_bool:
-            while not n == self.max_cards:
-                ##variables state reset each card pull iteration
-                #compare cards in pack to rarity ratios
+            while not num == self.max_cards:
+                ## Variables state reset each card pull iteration
+                # Compare cards in pack to rarity ratios
                 common = (True if n<=common_counter_ratio else False)
                 uncommon = (True if n<=uncommon_counter_ratio and n>= common_counter_ratio else False)
                 mythicrare = (True if n<=1 and n>=mythicrare_counter_ratio else False)
-                #make a random selection from the available distribution pools
+                # Make a random selection from the available distribution pools
                 color_random = random.random(0, len(color_pool))
                 color_select = color_pool[color_random]
                 multicolor = False
@@ -494,7 +498,7 @@ class pack():
                 rarity_select = rarity_pool[rarity_random]
                 type_random = random.random(0, len(type_pool))
                 type_select = type_pool[type_random]
-                #prepare to track whether the card meets the criterion
+                # Prepare to track whether the card meets the criterion
                 approve = {'color':False,
                            'rarity':False,
                            'type':False}
@@ -504,49 +508,49 @@ class pack():
                     approve['rarity'] = True
                 if not self.type_bool:
                     approve['type'] == True
-                #track if a card was added to the pack this iteration
+                # Track if a card was added to the pack this iteration
                 success = False
-                #type check the variables
+                # Type check the variables
                 if cube.type() == 'class pg.cube' and rare.type() == bool:
-                    #rarity, type, and color constraints
+                    # Rarity, type, and color constraints
                     if rare and ratio_c and ratio_t:
-                        #read the cube file
+                        # Read the cube file
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
-                            #line by line
+                            # Line by line
                             for line in cube:
-                                #turn the line into a list of str objects, comma delineated
+                                # Turn the line into a list of str objects, comma delineated
                                 card = cube.readline()
-                                ##make sure the card meets the random selection criterion
-                                #check for color_select to roll multicolored
+                                ## Make sure the card meets the random selection criterion
+                                # Check for color_select to roll multicolored
                                 if color_select != 'mc':
-                                    #check if the three selections are in the current line
+                                    # Check if the three selections are in the current line
                                     if color_select and type_select and rarity_select in card:
-                                        #check if the color is allowed by distribution constraints
+                                        # Check if the color is allowed by distribution constraints
                                         for k in self.color_pool:
                                             if card[10] in self.color_pool:
                                                 if self.color_dis[k]:
                                                     pass
                                                 else:
                                                     approve['color'] = True
-                                        #check if the type is allowed by distribution constraints
+                                        # Check if the type is allowed by distribution constraints
                                         for k in self.type_pool:
                                             if card[77] in type_pool:
                                                 if type_dis[k]:
                                                     pass
                                                 else:
                                                     approve['type'] = True
-                                        #check if the rarity is allowed by distribution constraints
+                                        # Check if the rarity is allowed by distribution constraints
                                         for k in self.rarity_pool:
                                             if card[64] in self.rarity_pool:
                                                 if rarity_dis[k]:
                                                     pass
                                                 else:
                                                     approve['rarity'] = True
-                                        #track if the card was approved by the distribution constraints
+                                        # Track if the card was approved by the distribution constraints
                                         approval = (approve['color'] and
                                                     approve['type'] and
                                                     approve['rarity'])
-                                        #increase the appropriate counter if the card was approved, add it to the pack, then mark success True
+                                        # Increase the appropriate counter if the card was approved, add it to the pack, then mark success True
                                         if approval:
                                             self.color_counter[card[10]] += 1
                                             self.rarity_counter[card[64]] += 1
@@ -555,7 +559,7 @@ class pack():
                                                     self.type_counter[k] += 1
                                             self.add_card(card)
                                             success = True   
-                                #run multicolored verifications
+                                # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in st.mc:
@@ -564,25 +568,25 @@ class pack():
                                             else:
                                                 multicolor = True
                                                 approve['color'] = True
-                                        #check if the type is allowed by distribution constraints
+                                        # Check if the type is allowed by distribution constraints
                                         for k in self.type_pool:
                                             if card[77] in type_pool:
                                                 if type_dis[k]:
                                                     pass
                                                 else:
                                                     approve['type'] = True
-                                        #check if the rarity is allowed by distribution constraints
+                                        # Check if the rarity is allowed by distribution constraints
                                         for k in self.rarity_pool:
                                             if card[64] in self.rarity_pool:
                                                 if rarity_dis[k]:
                                                     pass
                                                 else:
                                                     approve['rarity'] = True
-                                        #track if the card was approved by the distribution constraints
+                                        # Track if the card was approved by the distribution constraints
                                         approval = (approve['color'] and
                                                     approve['type'] and
                                                     approve['rarity'])
-                                        #increase the appropriate counter if the card was approved, add it to the pack, then mark success True
+                                        # Increase the appropriate counter if the card was approved, add it to the pack, then mark success True
                                         if approval:
                                             self.color_counter['mc'] += 1
                                             self.rarity_counter[card[64]] += 1
@@ -592,7 +596,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##rarity and type constraints
+                    ## Rarity and type constraints
                     elif rare and not ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -621,7 +625,7 @@ class pack():
                                         self.add_card(card)
                                         success = True  
                             cube.close()
-                    ##rarity and color Constraints
+                    ## Rarity and color constraints
                     elif rare and ratio_c and not ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -657,7 +661,7 @@ class pack():
                                             self.rarity_counter[card[64]] += 1
                                             self.add_card(card)
                                             success = True  
-                                #run multicolored verifications
+                                # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in st.mc:
@@ -666,18 +670,18 @@ class pack():
                                             else:
                                                 multicolor = True
                                                 approve['color'] = True
-                                        #check if the rarity is allowed by distribution constraints
+                                        # Check if the rarity is allowed by distribution constraints
                                         for k in self.rarity_pool:
                                             if card[64] in self.rarity_pool:
                                                 if rarity_dis[k]:
                                                     pass
                                                 else:
                                                     approve['rarity'] = True
-                                        #track if the card was approved by the distribution constraints
+                                        # Track if the card was approved by the distribution constraints
                                         approval = (approve['color'] and
                                                     approve['type'] and
                                                     approve['rarity'])
-                                        #increase the appropriate counter if the card was approved, add it to the pack, then mark success True
+                                        # Increase the appropriate counter if the card was approved, add it to the pack, then mark success True
                                         if approval:
                                             self.color_counter['mc'] += 1
                                             self.rarity_counter[card[64]] += 1
@@ -687,7 +691,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##color and type Restraints
+                    ## Color and type Restraints
                     elif not rare and ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -725,7 +729,7 @@ class pack():
                                                     self.type_counter[k] += 1
                                             self.add_card(card)
                                             success = True  
-                                #run multicolored verifications
+                                # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in st.mc:
@@ -734,18 +738,18 @@ class pack():
                                             else:
                                                 multicolor = True
                                                 approve['color'] = True
-                                        #check if the type is allowed by distribution constraints
+                                        # Check if the type is allowed by distribution constraints
                                         for k in self.type_pool:
                                             if card[77] in type_pool:
                                                 if type_dis[k]:
                                                     pass
                                                 else:
                                                     approve['type'] = True
-                                        #track if the card was approved by the distribution constraints
+                                        # Track if the card was approved by the distribution constraints
                                         approval = (approve['color'] and
                                                     approve['type'] and
                                                     approve['rarity'])
-                                        #increase the appropriate counter if the card was approved, add it to the pack, then mark success True
+                                        # Increase the appropriate counter if the card was approved, add it to the pack, then mark success True
                                         if approval:
                                             self.color_counter['mc'] += 1
                                             self.rarity_counter[card[64]] += 1
@@ -755,7 +759,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##color constraints only
+                    ## Color constraints only
                     elif not rare and ratio_c and not ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -784,7 +788,7 @@ class pack():
                                                 self.color_counter[card[10]] += 1
                                             self.add_card(card)
                                             success = True
-                                #run multicolored verifications
+                                # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in st.mc:
@@ -793,25 +797,25 @@ class pack():
                                             else:
                                                 multicolor = True
                                                 approve['color'] = True
-                                        #check if the type is allowed by distribution constraints
+                                        # Check if the type is allowed by distribution constraints
                                         for k in self.type_pool:
                                             if card[77] in type_pool:
                                                 if type_dis[k]:
                                                     pass
                                                 else:
                                                     approve['type'] = True
-                                        #check if the rarity is allowed by distribution constraints
+                                        # Check if the rarity is allowed by distribution constraints
                                         for k in self.rarity_pool:
                                             if card[64] in self.rarity_pool:
                                                 if rarity_dis[k]:
                                                     pass
                                                 else:
                                                     approve['rarity'] = True
-                                        #track if the card was approved by the distribution constraints
+                                        # Track if the card was approved by the distribution constraints
                                         approval = (approve['color'] and
                                                     approve['type'] and
                                                     approve['rarity'])
-                                        #increase the appropriate counter if the card was approved, add it to the pack, then mark success True
+                                        # Increase the appropriate counter if the card was approved, add it to the pack, then mark success True
                                         if approval:
                                             self.color_counter['mc'] += 1
                                             self.rarity_counter[card[64]] += 1
@@ -821,7 +825,7 @@ class pack():
                                             self.add_card(card)
                                             success = True
                             cube.close()
-                    ##type constraints only
+                    ## Type constraints only
                     elif not rare and not ratio_c and ratio_t:
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             for line in cube:
@@ -843,7 +847,7 @@ class pack():
                                         self.add_card(card)
                                         success = True  
                             cube.close()
-                    ##no distribution constraints, fairly resource intensive
+                    ## No distribution constraints, fairly resource intensive
                     elif not rare and not ratio_c and not ratio_t:
                         random = random.random(0, len(cards))
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
@@ -859,7 +863,7 @@ class pack():
                 if success:
                     n+=1
             
-    #return true if color constraint met
+    # Return true if color constraint met
     def get_color_bool(self):
         for k in self.color_dis:
             if self.color_counter[k] >= self.color_ratio_min and <= color_ratio_max:
@@ -871,7 +875,7 @@ class pack():
                 return False
         return True
 
-    #return true if rarirty constraint met
+    # Return true if rarirty constraint met
     def get_rarity_bool(self):
         if self.rarity_counter['common'] == self.common_card_ratio:
             self.rarity_dis['common'] = True
@@ -884,7 +888,7 @@ class pack():
                 return False
         return True
 
-    #return true if type constraint met
+    # Return true if type constraint met
     def get_type_bool(self):
         if self.type_counter['creature'] >= self.creature_card_ratio_min:
             self.type_dis['Creature'] = True
@@ -897,25 +901,25 @@ class pack():
                 return False
         return True
 
-    #count and display some identifying information about the packs generated
+    # Count and display some identifying information about the packs generated
     def list_cards(self):
         with open(self.path, 'r', encoding='utf-8', newline='') as pack:
             for line in pack:
                 line = pack.readline()
                 print('name:'+line[52]+', '+'color(s):'+line[10]+', '+'type:'+line[77])
 
-    #packList sorting by rarity, then alphabetical
+    # PackList sorting by rarity, then alphabetical
     def list_sort(self):
         pass
-        #create separate lists of cards by rarity then populate
+        # Create separate lists of cards by rarity then populate
         common = []
         uncommon = []
         rare = []
         mythic =[]
         with open(self.path, 'r', encoding='utf-8') as cards:
             for cid in self.cube_list:
-                #check the rarity of each card and append it to the appropriate list
-                    for n in range(len(cards)):
+                # Check the rarity of each card and append it to the appropriate list
+                    for num in range(len(cards)):
                         line = cards.readline()
                         if cid in line and line[64] == 'common':
                             common.append(cid)
@@ -933,18 +937,18 @@ class pack():
         self.sorted_list['mythic']: mythic
         return self.sorted_list
         
-    #remove cards from the pack card list
+    # Remove cards from the pack card list
     def remove_card(self, card_id):
         for cid in self.pack_list:
             if card_id == cid:
                 self.pack_list.remove(cid)
         return self.pack_list
 
-    #select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
+    # Select the relevant card(s) by cardID and replace it with the next cardID, repeat for each pair 
     def replace_card(self, [name1, replace1], [name2, replace2], *args):
-        for n in range(len(self.replace_card[args])):
+        for num in range(len(self.replace_card[args])):
             for cid in self.pack_list:
-                if cid == n[n]:
+                if cid == n[num]:
                     self.remove_card(cid)
                 else:
                     self.add_card(cid)

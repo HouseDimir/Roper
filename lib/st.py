@@ -9,43 +9,71 @@ import requests
 import platform
 import subprocess
 
-class smartjack():
+class SmartJack():
     def __init__(self):
-        self.dest_dict = {'1':'google.com',
+        """Initiate smartjack web access instance."""
+        self.test_dict = {'1':'google.com',
                     '2':'4.2.2.2',
                     '3':'8.8.4.4',
                     '4':'4.2.2.2',
                     '5':'8.8.8.8',
                     '6':'4.2.2.1'}
-        #gets the current working directory for file handling
+        # Assigns the key name as the destination and the 
+        # value declared as the optional port to access
+        self.dest_dict ={}
+        # Gets the current working directory for file handling
         self.cwd = os.getcwd()
-        self.dest_file_path = []
-        #defines the mtgjson URL to query for All Printings
-        self.cardp = 'https://mtgjson.com/api/v5/csv/'
-        self.cardf = 'https://mtgjson.com/api/v5/csv/cards.csv'
+        # Assigns the key name from dest_dict.keys() to input()
+        # value representing local filepath.
+        self.dest_file_path = {}
+        # # Defines the mtgjson URL to query for All Printings
+        # self.cardp = 'https://mtgjson.com/api/v5/csv/'
+        # self.cardf = 'https://mtgjson.com/api/v5/csv/cards.csv'
+        # # Defines the file name for the saved file
+        # self.ccsv = 'cards.csv'
+        # # File path for cards.csv
+        # self.cards_file_path = str(cwd) + '/bin/' + str(ccsv)
 
-        #defines the file name for the saved file
-        self.ccsv = 'cards.csv'
-        self.fp = str(cwd) + '/bin/' + str(ccsv)
-        #file path for cards.csv
-        self.cfp = str(cwd) + '/bin/' + str(ccsv)
+    def add_dest(self, dest, port=None):
+        """Populate the destination dict with nodes you wish to
+        access. Declare a port number as required."""
+        if port != None:
+            dest_dict[dest] = port
+        else:
+            dest_dict[dest] = None
+        return
+
+    def get_dest_filepath(self, filepath_list):
+        """Access the list of keys in the destination dict and
+        prompt the user for input on where to put each item once
+        retrieved by self.file_upd()"""
+        if len(filepath_list) > len(dest_dict.keys()):
+            raise ValueError('Too many items in the supplied list'
+                            'of filepaths.')
+        elif len(filepath_list) < len(dest_dict.keys()):
+            raise ValueError('Too few items in the supplied list'
+                            'of filepaths.')
+        elif len(filepath_list) != len(dest_dict.keys()):
+            raise ValueError('Incorrect number of items in filepath'
+                            'list supplied.')
+        else:
+            for key in dest_dict.keys():
+                dest_file_path[key] = filepath
+            return
 
 
-    def get_dest_filepath(self):
-        #code to get user input about file name and filepath for each destination in dest_list
-
-
-    def _file_upd(self):
-        """Access the mtgjson host and get the most up to date card list from
-        the Oracle db"""
+    def file_upd(self):
+        """Access the mtgjson host and get the most up to date
+        card list from the Oracle db"""
         self.get_dest_filepath()
-        print('Retrieving data from source destination; this may take a minute.')
-        for path in self.dest_file_path:
-            with requests.get(self.dest_file_path[path], stream=True) as request:
+        print('Retrieving data from source destination; this may'
+            'take a minute.')
+        for k, v in self.dest_file_path:
+            with requests.get(k, stream=True) as request:
                 request.raise_for_status()
-                with open(file_write_path, 'wb') as file:
+                with open(v, 'wb') as file:
                     file.write(request.content)
-                    #pulls raw data to manually decode
+                    # Pulls raw data to manually decode
                     request_content = request.content
                     detenc = chardet.detect(request_content)
                     if debug:
@@ -55,30 +83,37 @@ class smartjack():
                         print('status: ', request.status_code)
                         print('chardet: ', detenc)
 
-    def _dest_test(self):
-        """Returns TRUE if dest responds to ICMP; may timeout due to dest config"""
-        #checks for OS compatibility and sets proper parameter definition. 
+    def dest_test(self, dest, ping_num):
+        """Returns TRUE if dest responds to ICMP; may timeout
+        due to dest config"""
+        # Checks for OS compatibility and sets proper parameter
+        # definition. 
         param = '-n' if platform.system().lower()=='windows' else '-c'
         if debug:
             print('param: ' + param)
-        #defines exact command syntax using var formatting 
-        command = ['ping', param, attempts, dest]
+        # Defines exact command syntax using var formatting 
+        command = ['ping', param, ping_num, dest]
         if debug:
             print('command: ', command)
             print('command call: ', subprocess.call(command))
-        #gives TRUE/FALSE return based on the output of the subprocess.call() func
+        # Gives TRUE/FALSE return based on the output of the
+        # subprocess.call() func
         return True if subprocess.call(command)== 0 else False
 
-    def _path_iter(self, destdict):
-        '''Iterate over the K:V pairs in the provided dict, added the keys as destinations and the values as ping amounts to self.dest_dict'''
+    def path_iter(self):
+        """Iterate over the K:V pairs in the provided dict, added
+        the keys as destinations and the values as ping amounts
+        to self.dest_dict"""
         icmp = False
-        #iterates through the dd dict to verify connectivity
-        for k, v in dd.items():
+        # Iterates through the destination dictionary to verify
+        # connectivity
+        for k, v in self.dest_dict:
             while not icmp:
                 if debug:
-                    print(f'Attempting to send ' + str(k) + ' packet(s) to ' + str(v))
-                #Pings each iterate and checks for response
-                if _ptst(k, v):
+                    print(f'Attempting to send ' + str(k) 
+                            + ' packet(s) to ' + str(v))
+                # Pings each iterate and checks for response
+                if self.dest_test():
                     icmp = True
                     if debug:
                      print('ICMP: ', icmp)
@@ -88,33 +123,33 @@ class smartjack():
                         print(icmp)
         return icmp
 
-#if debug:
+# if debug:
 #    print('Target IPs {#/pings:add}: ', dd)
 
-##calls the ping infrastructure to greenlight the rest of the functions test.
-#pexe = _pit(dd)
-#if debug:
+# #calls the ping infrastructure to greenlight the rest of the functions test.
+# pexe = _pit(dd)
+# if debug:
 #    print('Ping test successful: ', pexe)
 
-##tests connection to mtgjson
-#if pexe:
+# #tests connection to mtgjson
+# if pexe:
 #    tget = requests.get(cardf, stream=True)
 #    oracletst = True if tget.status_code == 200 else False
 #    oracletst
 #    if debug:
 #        print('Ping response from mtgjson: ', oracletst)
-##activates the user prompt to update their data file
-#if oracletst:
+# #activates the user prompt to update their data file
+# if oracletst:
 #    updprompt = True
 #    if debug:
 #        print('System awaiting input from user: ', updprompt)
 
-##checks for existing data file
-#if not os.path.exists(str(cwd) + '/bin/' + str(ccsv)):
+# #checks for existing data file
+# if not os.path.exists(str(cwd) + '/bin/' + str(ccsv)):
 #    updprompt = False
 #    _cupd()   
-##checks to see if the user wants to update the data file before continuing
-#else:
+# #checks to see if the user wants to update the data file before continuing
+# else:
 #    while updprompt:
 #        oracleupd = input('Card data accessible, would you like to update? Y or N')
 #        if oracleupd == 'y':

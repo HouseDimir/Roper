@@ -1,13 +1,15 @@
 Author: Jessie Kovacs
 CC-BY-NC-ND
-jkcreations.carrd.co/Cubitrice
+jkcreations.carrd.co/Roper
 
-This is a Python based data sorting system designed to separate 360 card lists into Draft Booster packs. To initiate setup, open a command prompt and type "py cubitrice.exe -s -f". When running the genpack function, the resulting CSV sheets will be placed in a folder named by the prompted command line. Normal file/folder naming conventions apply. 
+This is a Python based data sorting system designed to separate variable length card lists into Draft Booster packs. To initiate setup, open a command prompt and type "py roper -setup". When running the -cube command use the Cube commands below to define what cards will be searched for. When running the -draft command use the Pack commands below to define how the pack will be generated. 
 
 Documentation:
-User Commands
-Debug Mode: py cubitrice.exe -d
-Firstime Setup: py cubitrice.exe -s -f
-Manually Update: py cubitrice.exe -s -u
-Check for Updates/Install Updates: py cubitrice.exe -u -i
+-System Commands-
+Debug Mode: roper debug
+Firstime Setup: roper -setup
+Manually Update: roper update forced
+
+-Cube Commands-
+Keyword Selection: -kw Banding, Flying, Indestructible, Mill  *Or based selection, may return only creatures
 

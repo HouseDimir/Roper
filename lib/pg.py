@@ -1,5 +1,6 @@
 import os
 import st
+import re
 import cli
 import random
 
@@ -100,7 +101,7 @@ class cube():
                                     try int(v):
                                         digit = int(v)
                                     except ValueError:
-                                        if v in cli.sym:
+                                        if re.match(cli.sym, v):
                                             operand = v
                                         else:
                                             pass

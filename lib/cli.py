@@ -2,20 +2,7 @@ import os
 import re
 import datetime
 
-#variables to define regex patterns
-alph = r'[a-zA-Z]'
-num = r'[0-9]'
-alphnum = r'[a-zA-Z0-9]'
-sym = r'[><=]'
-#
-#Help Mode flag
-helpmode = False
-#
-#Date Time Management
-dt = datetime.datetime(2026, 3, 11)
-dt = dt.today()
-#
-###Store all valid commands for reference later.
+###store all valid commands for reference later.
 ##params_dict = {
 ##    '-excl':[exclCLI(), '*', False, bool, None, False, 'exclude cards that do not match all selected criteria, default inclusive'],
 ##    '-txt':[txtCLI(), '+', '', str, None, False, 'list of words or phrases you wish to select from all text on a card for the cube'],
@@ -28,30 +15,39 @@ dt = dt.today()
 ##    '-t':[typeCLI(), '+', '', str, None, False, 'list of Types you wish to select for the cube; may not be compatible with --kw']
 ##    }
 
-#Listener object to accept user input
+#listener object to accept user input
 class listener():
     def __init__(self, logging):
         self.logging = logging
         self.log_path = os.getcwd()+f'/logs/{dt}.txt'
         self.output: str = ''
         self.exit = False
+        self.helpmode = False
+        #variables to define regex patterns
+        self.alph = r'[a-zA-Z]'
+        self.num = r'[0-9]'
+        self.alphnum = r'[a-zA-Z0-9]'
+        self.sym = r'[><=]'
+        #date time management
+        self.dt = datetime.datetime(2026, 3, 11)
+        self.dt = dt.today()
 
-    #Close Listener             
+    #close Listener             
     def exit(self):
-        self.exit = False
-        return self.exit
+        self.exit = True
+        return
     
-    #Begin listening through input object
+    #begin listening through input object
     def listen(self):
-        if not helpmode:
+        if not self.helpmode:
             self.output = input()
             return self.output
-        #Help Mode Dialogue
+        #help Mode Dialogue
         else:
             self.output = input("Help Mode; Enter a command to receive a brief description and usage example:") and self.listening
             return self.output
         
-#Parsing object to handle live user input
+#parsing object to handle live user input
 class nParse():
     def __init__(self, listener):
         self.listener=listener
@@ -62,11 +58,11 @@ class nParse():
         return len(nput.items())
 
     def enable_debug():
-        #Turn on debug mode
+        #turn on debug mode
         self.debug = True
-        return self.debug
+        return
         
-    #Break the input into the command and its associated arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]} k=command v=arguments 
+    #beak the input into the command and its associated arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]} k=command v=arguments 
     def parse_input(self):
         nput = self.listener.listen()
         lenput = len(nput)
@@ -79,23 +75,23 @@ class nParse():
         for n in range(0, lenput):
             if self.debug:
                 print(f'Character: {nput[n]} \n Char Num: {n}')
-            #Check the value of the next character in the input stream
+            #check the value of the next character in the input stream
             try:
                 char_match = re.match(alphnum, nput[n+1])
                 sym_match = re.match(sym, nput[n+1])
-            #Pass through errors from reaching the end of the list
+            #pass through errors from reaching the end of the list
             except IndexError:
                 pass
-            #Break out for helpmode
+            #break out for helpmode
             if nput[n] == '?':
                 helpmode = True
                 break
-            #Ensure the 0th item is recorder
+            #ensure the 0th item is recorder
             elif n == 0:
                 assembler.append(nput[n])
                 if self.debug:
                     print(f'Assembler: {assembler}')
-            #Pass on the second half of command terminator
+            #pass on the second half of command terminator
             elif nput[n] == '-' and nput[n-1] == '-':
                 pass
             #pass on the receding space of command terminator
@@ -138,7 +134,7 @@ class nParse():
                     if self.debug:
                         print(f'Stored Vars: {stored_vars}')
                     tier_2: str=''
-            #Break out if incorrect command
+            #break out if incorrect command
             elif nput[n] == '-' and not char_match and not sym_match:
                 raise ValueError("An incorrect command was supplied!")
             #store the character if it fits alphanum/symbol pattern
@@ -146,65 +142,19 @@ class nParse():
                 assembler.append(nput[n])
                 if self.debug:
                     print(f'Assembler: {assembler}')
-            #Break out for unrecognized characters
+            #break out for unrecognized characters
             else:
                 raise AttributeError(f"Unrecognized character input: {nput[n]}")
         return output
 
-#Handle command input storage and engine switching
-def cube_gen():
-    #enables cube generation loops to the suplied arguments
-    pass
+##handle command input storage and engine switching
+#def cube_gen():
+#    #enables cube generation loops to the suplied arguments
+#    pass
 
-def exclCLI():
-    print('Exclusive')
-    #Returns Exclusive as True
-    pass
-
-def exitCLI():
-    #Closes out of the software
-    pass
-    
-def gcCLI():
-    #Returns Game Changers as True
-    pass
-
-def kwCLI():
-    #Returns a list of keywords listed behind the -kw argument
-    pass
-
-def mvCLI():
-    print('Mana Value')
-    #Returns tuple containing str of operators followed by a numerical value
-    pass
-
-def pack_gen(max_num):
-    #enables pack generation loops to the max supplied argument and supplied arguments
-    pass
-    
-def scCLI():
-    #Returns list of Set Codes listed behind -s argument
-    pass
-
-def subtCLI():
-    #Returns list of subtypes listed behind -subt argument
-    pass
-
-def suptCLI():
-    #Returns list of supertypes listed behind -supt argument
-    pass
-
-def txtCLI():
-    #Returns list of str as listed behind -txt argument
-    pass
-
-def typeCLI():
-    #Returns list of types as listed behind -t argument
-    pass
-
-#Define argument parsing framework and command handling
-listener = listener(False)
-parse = nParse(listener)
-while not listener.exit:
-    args = parse.parse_input()
-    print(args)
+##Define argument parsing framework and command handling
+#listener = listener(False)
+#parse = nParse(listener)
+#while not listener.exit:
+#    args = parse.parse_input()
+#    print(args)

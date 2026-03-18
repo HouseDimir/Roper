@@ -1,0 +1,11 @@
+The following contains basic plans to expand and engineer functionality in the nput, roper, and smartjack modules, as well as plans for the package as a whole.
+
+Package Goal:
+A cohesive piece of software that fluidly and efficiently utilizes machine resources and an external connection to draw a series of files from mtgjson.com, sort them into a series of more simply iterated over data. It then aims to take the data and sift it into small batches of card data (known as a Cube) to be chosen from at will or used to dynamically generate Draft Packs for users to host home-made draft games with friends
+
+nPut module:
+Take either dynamic user input or file input and process the text string into a series of commands and attributes to guide the behavior of the various functions called by the argument parser.
+
+smartjack module:
+Dynamically contact listed destination addresses and then pull the data available from the web page to store as directed by kwargs.
+

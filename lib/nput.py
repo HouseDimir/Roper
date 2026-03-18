@@ -1,3 +1,9 @@
+"""nPut serves as a custom command-line argument parsing module
+with a focus on taking classic Unix style command window entries
+and handling them in a pythonic way. nPut aims to be a learning
+tool as much as a foundational tool in further development of
+larger projects."""
+
 import os
 import re
 import datetime
@@ -15,8 +21,9 @@ import datetime
 ##    '-t':[typeCLI(), '+', '', str, None, False, 'list of Types you wish to select for the cube; may not be compatible with --kw']
 ##    }
 
-# Listener object to accept user input
+# 
 class Listener():
+    """Listener object to accept user input"""
     def __init__(self, logging):
         self.logging = logging
         self.output: str = ''
@@ -31,14 +38,15 @@ class Listener():
         self.datetime = datetime.datetime(2026, 3, 11)
         self.today = datetime.today()
         self.log_path = os.getcwd() + f'/logs/{today}.txt'
-
-    # Close Listener             
+            
     def exit(self):
+        """Close Listener"""
         self.exit = True
         return
     
-    # Begin listening through input object
+    # 
     def listen(self):
+        """Begin listening through input object"""
         if not self.helpmode:
             self.output = input()
             return self.output
@@ -49,32 +57,71 @@ class Listener():
                                 'usage example:')
             return self.output
         
-# Parsing object to handle live user input
 class nParse():
+    """Parsing object to handle live user input"""
     def __init__(self, listener):
         self.listener=listener
         self.debug = False
+        self.commands = {}
+        self.output = {}
 
-    def enum(nput):
-        #get the length of the string
-        return len(nput.items())
+    def add_command(self, command):
+        """Dynamically add commands, where command is a dict with
+        the various parameter names as the key and the values
+        themselves as the values assigned to each argument name.
 
-    def enable_debug():
-        #turn on debug mode
+        Ex: 
+        command = {
+                'str_':'-excl',
+                'func':function(),
+                'arg_count':'0',
+                'default':False
+                'help_':'this is a help string',
+                'required':False,
+                'type_':bool
+                'mod':None
+                }"""
+        str_ = command['str_']
+        func = command['func']
+        arg_count = command['arg_count']
+        help_ = command['help_']
+        required = command['required']
+        type_ = command['type_']
+        mod = command['mod']
+        self.commands[str_] = [str_, func, arg_count, help_, required, type_, mod]
+        return self.commands[str_]
+
+    def commands_action(self):
+        """Call the functions passed as command variables to 
+        add_argument() before clearing the self.output attribute."""
+        # attr = commands.values()
+        # for value in attr:
+        #     for arg_ in value:
+        #         if type(arg) == 'function':
+        #             ()
+        pass
+
+    def enum(self):
+        """Get the length of passed output."""
+        return len(self.listener.output)
+
+    def enable_debug(self):
+        """Enable debug strings."""
         self.debug = True
         return
         
-    # Break the input into the command and its associated arguments
-    # in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]} k=command 
-    # v=arguments 
     def parse_input(self):
+        """Break the input into the command and its associated
+        arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]}
+        k=command v=arguments."""
+
+        ## To be reworked to better match Unix convention
         nput = self.listener.listen()
         lenput = len(nput)
         # Storage variables for str op
         assembler = []
         last_key: str = ''
         stored_vars = []
-        output = {}
         # Iterate over the length of the nput to perform input phrase separation by space
         for num in range(0, lenput):
             if self.debug:
@@ -108,11 +155,11 @@ class nParse():
                     print(f'Assembler: {assembler}')
             elif nput[num] == '-' and nput[num + 1] == '-':
                 # Store the last key and its accumulated variables in the output dict
-                output[last_key] = []
+                self.output[last_key] = []
                 for item in stored_vars:
-                    output[last_key].append(item)
+                    self.output[last_key].append(item)
                 if self.debug:
-                    print(f'Output: {output}')
+                    print(f'Output: {self.output}')
                 # Clear out any to be used variables before the saving the current progress
                 last_key: str = ''
                 stored_vars.clear()
@@ -149,7 +196,7 @@ class nParse():
             # Break out for unrecognized characters
             else:
                 raise AttributeError(f"Unrecognized character input: {nput[num]}")
-        return output
+        return self.commands
 
 ##Define argument parsing framework and command handling
 #listener = listener(False)

@@ -66,25 +66,13 @@ class nParse():
                 'type_':bool
                 'mod':None
                 }"""
-        str_ = command['str_']
-        func = command['func']
-        arg_count = command['arg_count']
-        help_ = command['help_']
-        required = command['required']
-        type_ = command['type_']
-        mod = command['mod']
-        self.commands[str_] = [str_, func, arg_count, help_, required, type_, mod]
-        return self.commands[str_]
+        self.commands[command['str_']] = command
 
     def commands_action(self):
         """Call the functions passed as command variables to 
         add_argument() before clearing the self.output attribute."""
-        # attr = commands.values()
-        # for value in attr:
-        #     for arg_ in value:
-        #         if type(arg) == 'function':
-        #             ()
-        pass
+        for command in self.commands.values():
+            command['func']()
 
     def enum(self):
         """Get the length of passed output."""

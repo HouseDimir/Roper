@@ -1,8 +1,8 @@
 import os
-import st
 import re
-import cli
+import nput
 import random
+import smartjack
 
 #UUIDs card[79]
 
@@ -39,7 +39,6 @@ class cube():
         self.wl = []
         self.xl = []
         self.lc = [bl, gl, ll, ml, rl, ul, wl, xl]
-
         # Defines the various CSV values for multicolor cards
         self.mc = ["B, G, R, U, W",
                     "B, G, R, U",
@@ -85,7 +84,6 @@ class cube():
                     "W, G",
                     "W, R",
                     "W, U"]
-
         # Define the file paths for the sorted card files
         self.bfp = str(cwd) + '/bin/cards_black.csv' 
         self.gfp = str(cwd) + '/bin/cards_green.csv'
@@ -148,7 +146,7 @@ class cube():
                                     try int(v):
                                         digit = int(v)
                                     except ValueError:
-                                        if re.match(cli.sym, v):
+                                        if re.match(nput.sym, v):
                                             operand = v
                                         else:
                                             pass
@@ -308,7 +306,7 @@ class cube():
                             ll.append(l)
         # Exception handling to ensure there is a file for the cards to go to                    
         except FileNotFoundError:
-            st._cupd()
+            # Some code that pulls the necessary card files
             with open(cfp, 'r', newline='', encoding='utf-8') as cards:
                 r = csv.reader(cards)
                 for l in r:
@@ -491,7 +489,7 @@ class pack():
                 # Track if a card was added to the pack this iteration
                 success = False
                 # Type check the variables
-                if cube.type() == 'class pg.cube' and rare.type() == bool:
+                if cube.type() ==  'roper.cube' and rare.type() == bool:
                     # Rarity, type, and color constraints
                     if rare and ratio_c and ratio_t:
                         # Read the cube file
@@ -542,7 +540,7 @@ class pack():
                                 # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
-                                        if card[10] in st.mc:
+                                        if card[10] in self.cube.mc:
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -618,7 +616,7 @@ class pack():
                                                     pass
                                                 else:
                                                     approve['color'] = True
-                                            elif card[10] in st.mc:
+                                            elif card[10] in self.cube.mc:
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -644,7 +642,7 @@ class pack():
                                 # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
-                                        if card[10] in st.mc:
+                                        if card[10] in self.cube.mc:
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -684,7 +682,7 @@ class pack():
                                                     pass
                                                 else:
                                                     approve['color'] = True
-                                            elif card[10] in st.mc:
+                                            elif card[10] in self.cube.mc:
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -712,7 +710,7 @@ class pack():
                                 # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
-                                        if card[10] in st.mc:
+                                        if card[10] in self.cube.mc:
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -752,7 +750,7 @@ class pack():
                                                     pass
                                                 else:
                                                     approve['color'] = True
-                                            elif card[10] in st.mc:
+                                            elif card[10] in self.cube.mc:
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -771,7 +769,7 @@ class pack():
                                 # Run multicolored verifications
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
-                                        if card[10] in st.mc:
+                                        if card[10] in self.cube.mc:
                                             if self.color_dis['mc']:
                                                 pass
                                             else:

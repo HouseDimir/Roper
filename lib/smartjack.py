@@ -26,13 +26,6 @@ class SmartJack():
         # Assigns the key name from dest_dict.keys() to input()
         # value representing local filepath.
         self.dest_file_path = {}
-        # # Defines the mtgjson URL to query for All Printings
-        # self.cardp = 'https://mtgjson.com/api/v5/csv/'
-        # self.cardf = 'https://mtgjson.com/api/v5/csv/cards.csv'
-        # # Defines the file name for the saved file
-        # self.ccsv = 'cards.csv'
-        # # File path for cards.csv
-        # self.cards_file_path = str(cwd) + '/bin/' + str(ccsv)
 
     def add_dest(self, dest, port=None):
         """Populate the destination dict with nodes you wish to
@@ -122,42 +115,3 @@ class SmartJack():
                     if debug:
                         print(icmp)
         return icmp
-
-# if debug:
-#    print('Target IPs {#/pings:add}: ', dd)
-
-# #calls the ping infrastructure to greenlight the rest of the functions test.
-# pexe = _pit(dd)
-# if debug:
-#    print('Ping test successful: ', pexe)
-
-# #tests connection to mtgjson
-# if pexe:
-#    tget = requests.get(cardf, stream=True)
-#    oracletst = True if tget.status_code == 200 else False
-#    oracletst
-#    if debug:
-#        print('Ping response from mtgjson: ', oracletst)
-# #activates the user prompt to update their data file
-# if oracletst:
-#    updprompt = True
-#    if debug:
-#        print('System awaiting input from user: ', updprompt)
-
-# #checks for existing data file
-# if not os.path.exists(str(cwd) + '/bin/' + str(ccsv)):
-#    updprompt = False
-#    _cupd()   
-# #checks to see if the user wants to update the data file before continuing
-# else:
-#    while updprompt:
-#        oracleupd = input('Card data accessible, would you like to update? Y or N')
-#        if oracleupd == 'y':
-#            updprompt = False
-#            _cupd()
-#        elif oracleupd == 'n':
-#            updprompt = False
-#            pass
-#        else:
-#            print('Invalid entry, please try again.')
-#            updprompt = True

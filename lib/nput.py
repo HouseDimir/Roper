@@ -8,20 +8,6 @@ import os
 import re
 import datetime
 
-###store all valid commands for reference later.
-##params_dict = {
-##    '-excl':[exclCLI(), '*', False, bool, None, False, 'exclude cards that do not match all selected criteria, default inclusive'],
-##    '-txt':[txtCLI(), '+', '', str, None, False, 'list of words or phrases you wish to select from all text on a card for the cube'],
-##    '-kw':[kwCLI(), '+', '', str, None, False, 'list of Keywords you wish to select for the cube; may return only creatures; may not be compatible with --t'], 
-##    '-s':[scCLI(), '+', '', str, None, False, 'list of Set Codes you wish to select for the cube'],
-##    '-mv':[mvCLI(), '?', '', str, None, False, '=/</>/<=/>= mana value; see documentation'],
-##    '-gc':[gcCLI(), '*', False, bool, None, False, 'are Gamechangers allowed or disallowed in the cube'],
-##    '-subt':[subtCLI(), '+', '', str, None, False, 'list of subtypes you wish to select for the cube'],
-##    '-supt':[suptCLI(), '+', '', str, None, False, 'list of supertypes you wish to select for the cube'],
-##    '-t':[typeCLI(), '+', '', str, None, False, 'list of Types you wish to select for the cube; may not be compatible with --kw']
-##    }
-
-# 
 class Listener():
     """Listener object to accept user input"""
     def __init__(self, logging):
@@ -44,7 +30,6 @@ class Listener():
         self.exit = True
         return
     
-    # 
     def listen(self):
         """Begin listening through input object"""
         if not self.helpmode:
@@ -197,10 +182,3 @@ class nParse():
             else:
                 raise AttributeError(f"Unrecognized character input: {nput[num]}")
         return self.commands
-
-##Define argument parsing framework and command handling
-#listener = listener(False)
-#parse = nParse(listener)
-#while not listener.exit:
-#    args = parse.parse_input()
-#    print(args)

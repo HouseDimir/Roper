@@ -946,7 +946,7 @@ class Pack():
                 self.pack_list.remove(cid)
         return self.pack_list
 
-    def replace_card(self, [name1, replace1], [name2, replace2], *args):
+    def replace_card(self, *kwargs):
         """Replace one card with another, using UUIDs to identify
         both the target and the replacement."""
         for num in range(len(self.replace_card[args])):

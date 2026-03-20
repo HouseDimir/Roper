@@ -9,6 +9,9 @@ import requests
 import platform
 import subprocess
 
+scope = (''
+        )
+
 class SmartJack():
     def __init__(self):
         """Initiate smartjack web access instance."""
@@ -61,10 +64,10 @@ class SmartJack():
         self.get_dest_filepath()
         print('Retrieving data from source destination; this may'
             'take a minute.')
-        for k, v in self.dest_file_path:
-            with requests.get(k, stream=True) as request:
+        for key, value in self.dest_file_path:
+            with requests.get(key, stream=True) as request:
                 request.raise_for_status()
-                with open(v, 'wb') as file:
+                with open(value, 'wb') as file:
                     file.write(request.content)
                     # Pulls raw data to manually decode
                     request_content = request.content

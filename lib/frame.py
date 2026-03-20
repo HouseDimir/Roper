@@ -3,6 +3,9 @@
 from tkinter import *
 from tkinter import ttk
 
+scope = (''
+        )
+
 class ScrollLabel(ttk.Frame):
 	"""Widget which iterates over a data storage file to get
 	command line entries in memory saving process; assign
@@ -34,7 +37,7 @@ class ScrollLabel(ttk.Frame):
 
 	def _pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
-		return True if pos >= top_bound and pos <= bottom_bound
+		return True if pos >= top_bound and pos <= bottom_bound else False
 
 	def scroll_down(self):
 		"""Shift the ScrollLabel center downwards one."""
@@ -134,10 +137,10 @@ class CommandLine():
 		self.text_field.rowconfigure(0, weight=1)
 		# Grid everything with some padding to prevent crowding.
 		for child in f_main.winfo_children(): 
-    		child.grid_configure(padx=5, pady=5)
-    	root.bind('<ScrollWheelUp>', self.text_field.scroll_up)
-    	root.bind('<ScrollWheelDown>', self.text_field.scroll_down)
-    	root.bind('<Return>', self.parse_cmd)
+			child.grid_configure(padx=5, pady=5)
+		root.bind('<ScrollWheelUp>', self.text_field.scroll_up)
+		root.bind('<ScrollWheelDown>', self.text_field.scroll_down)
+		root.bind('<Return>', self.parse_cmd)
 		# Run the root
 		self.root.mainloop()
 

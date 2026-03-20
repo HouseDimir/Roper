@@ -11,6 +11,9 @@ import smartjack
 import subprocess
 import tkinter as tk
 
+scope = (''
+        )
+
 # Some code that creates a basic cli with text-wrapping, a non-
 # standard font, and customizable coloration options (3 themes).
 # The cli should display printed text to the user, distinguish
@@ -18,3 +21,7 @@ import tkinter as tk
 # the input of a large number of words/characters without slowing
 # down.
 
+smartjack = SmartJack()
+nput = nParse(variable_mode=True, variable=cmd_str)
+roper_cube_list = []
+roper_pack_list = []

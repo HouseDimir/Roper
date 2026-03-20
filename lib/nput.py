@@ -11,6 +11,9 @@ import os
 import re
 import datetime
 
+scope = (''
+        )
+
 class Listener():
     """Listener object to accept user input"""
     def __init__(self, logging):

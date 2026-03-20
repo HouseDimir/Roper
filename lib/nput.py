@@ -4,6 +4,9 @@ and handling them in a pythonic way. nPut aims to be a learning
 tool as much as a foundational tool in further development of
 larger projects."""
 
+## To be reworked to handle output of command as str variable
+## from user interface software
+
 import os
 import re
 import datetime
@@ -44,8 +47,26 @@ class Listener():
         
 class nParse():
     """Parsing object to handle live user input"""
-    def __init__(self, listener):
-        self.listener=listener
+    def __init__(self,
+                listener_mode=False,
+                listener=None,
+                variable_mode=False,
+                variable=None,
+                file_mode=False,
+                filepath=None):
+        if listener_mode:
+            self.listener=listener
+        if var_mode:
+            self.variable = variable
+        if file_mode:
+            self.filepath = filepath
+        if not listener_mode or variable_mode or file_mode:
+            raise AttributeError('Mode not defined on initialization.'
+                                'Please set <nParse.listener_mode>,'
+                                '<nParse.variable_mode>, or <nParse.file_mode>'
+                                'and then define <nParse.listener>,'
+                                '<nParse.variable>, or <nParse.filepath>'
+                                'respectively when calling <nParse>')
         self.debug = False
         self.commands = {}
         self.output = {}
@@ -88,7 +109,10 @@ class nParse():
         arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]}
         k=command v=arguments."""
 
+        ## To be reworked to respect listener/variable/file mode
         ## To be reworked to better match Unix convention
+        ## To be reworked to handle commands as dict instead of
+        ## list of attr
         nput = self.listener.listen()
         lenput = len(nput)
         # Storage variables for str op
@@ -110,7 +134,7 @@ class nParse():
             if nput[num] == '?':
                 helpmode = True
                 break
-            # Ensure the 0th item is recorder
+            # Ensure the 0th item is recorded
             elif num == 0:
                 assembler.append(nput[num])
                 if self.debug:

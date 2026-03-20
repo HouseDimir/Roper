@@ -4,24 +4,37 @@ describe, and build the interface users will be interacting with."""
 
 import os
 import re
-import nput
-import roper
 import platform
-import smartjack
 import subprocess
-import tkinter as tk
+from nput import *
+from frame import *
+from roper import *
+from tkinter import *
+from smartjack import *
+from pathlib import Path
+from tkinter import ttk
 
 scope = (''
         )
 
-# Some code that creates a basic cli with text-wrapping, a non-
+# Absolute pathing variables
+_current_file = Path(__file__).resolve()
+_module_dir = _current_file.parent
+_root_dir = _module_dir.parent
+
+# Creates a basic cli with text-wrapping, a non-
 # standard font, and customizable coloration options (3 themes).
 # The cli should display printed text to the user, distinguish
 # between file upload modes and text input modes, and allow for
 # the input of a large number of words/characters without slowing
 # down.
-
+var_track = ''
+root = Tk()
 smartjack = SmartJack()
-nput = nParse(variable_mode=True, variable=cmd_str)
+nput = nParse(variable_mode=True, variable=var_track)
+frame = CommandLine(root, nput)
+var_track = frame.cmd_str
 roper_cube_list = []
 roper_pack_list = []
+frame.draw_fields()
+frame.run_loop()

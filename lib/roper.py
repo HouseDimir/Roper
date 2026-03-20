@@ -3,10 +3,17 @@ import re
 import nput
 import random
 import smartjack
+from pathlib import Path
+
 
 #UUIDs card[79]
 scope = (''
         )
+
+# Absolute pathing variables
+_current_file = Path(__file__).resolve()
+_module_dir = _current_file.parent
+_root_dir = _module_dir.parent
 
 class Cube():
     """Initialize Cube object to store Pack generation pool."""
@@ -112,7 +119,7 @@ class Cube():
 
     
     def add_card(self, card):
-        """Add card to the cube path file and card UUID to cube.cube_list"""
+        """Add card to the cube path file and card UUID to cube.cube_list."""
         with open(self.path, 'w', encoding='utf-8') as cube:
             cube.write(card)
         self.cube_list.append(card[79])
@@ -876,7 +883,7 @@ class Pack():
         return True
 
     def get_rarity_bool(self):
-        """Return True if rarirty constraint met"""
+        """Return True if rarirty constraint met."""
         if self.rarity_counter['common'] == self.common_card_ratio:
             self.rarity_dis['common'] = True
         if self.rarity_counter['uncommon'] == self.uncommon_card_ratio:
@@ -889,7 +896,7 @@ class Pack():
         return True
 
     def get_type_bool(self):
-        """Return True if type constraint met"""
+        """Return True if type constraint met."""
         if self.type_counter['creature'] >= self.creature_card_ratio_min:
             self.type_dis['Creature'] = True
         if self.type_counter['Instant'] >= self.instant_ratio_min:

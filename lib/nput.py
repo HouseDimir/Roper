@@ -10,12 +10,18 @@ larger projects."""
 import os
 import re
 import datetime
+from pathlib import Path
 
 scope = (''
         )
 
+# Absolute pathing variables
+_current_file = Path(__file__).resolve()
+_module_dir = _current_file.parent
+_root_dir = _module_dir.parent
+
 class Listener():
-    """Listener object to accept user input"""
+    """Listener object to accept user input."""
     def __init__(self, logging):
         self.logging = logging
         self.output: str = ''
@@ -32,12 +38,12 @@ class Listener():
         self.log_path = os.getcwd() + f'/logs/{today}.txt'
             
     def exit(self):
-        """Close Listener"""
+        """Close Listener."""
         self.exit = True
         return
     
     def listen(self):
-        """Begin listening through input object"""
+        """Begin listening through input object."""
         if not self.helpmode:
             self.output = input()
             return self.output
@@ -49,7 +55,7 @@ class Listener():
             return self.output
         
 class nParse():
-    """Parsing object to handle live user input"""
+    """Parsing object to handle live user input."""
     def __init__(self,
                 listener_mode=False,
                 listener=None,
@@ -57,19 +63,27 @@ class nParse():
                 variable=None,
                 file_mode=False,
                 filepath=None):
-        if listener_mode:
-            self.listener=listener
-        if var_mode:
-            self.variable = variable
-        if file_mode:
-            self.filepath = filepath
-        if not listener_mode or variable_mode or file_mode:
+        if not listener_mode and not variable_mode and not file_mode:
             raise AttributeError('Mode not defined on initialization.'
-                                'Please set <nParse.listener_mode>,'
-                                '<nParse.variable_mode>, or <nParse.file_mode>'
-                                'and then define <nParse.listener>,'
-                                '<nParse.variable>, or <nParse.filepath>'
-                                'respectively when calling <nParse>')
+                                'Please set <nParse.listener_mode>, '
+                                '<nParse.variable_mode>, or <nParse.file_mode> '
+                                'and then define <nParse.listener>, '
+                                '<nParse.variable>, or <nParse.filepath> '
+                                'respectively when calling <nParse>.')
+        elif listener_mode:
+            self.listener=listener
+            self.variable = None
+            self.filepath = None
+        elif variable_mode:
+            self.variable = variable
+            self.listener = None
+            self.filepath = None
+        elif file_mode:
+            self.filepath = filepath
+            self.listener = None
+            self.variable = None
+        else:
+            pass
         self.debug = False
         self.commands = {}
         self.output = {}
@@ -116,8 +130,14 @@ class nParse():
         ## To be reworked to better match Unix convention
         ## To be reworked to handle commands as dict instead of
         ## list of attr
-        nput = self.listener.listen()
-        lenput = len(nput)
+        if self.listener != None:
+            nput = self.listener.listen()
+        elif self.variable != None:
+            nput = self.variable
+        else:
+            with open(self.filepath, 'r', encoding='utf-8') as file:
+                nput = file.read()
+        lenput = len(nput.get())
         # Storage variables for str op
         assembler = []
         last_key: str = ''

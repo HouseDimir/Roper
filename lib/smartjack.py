@@ -8,9 +8,15 @@ import chardet
 import requests
 import platform
 import subprocess
+from pathlib import Path
 
 scope = (''
         )
+
+# Absolute pathing variables
+_current_file = Path(__file__).resolve()
+_module_dir = _current_file.parent
+_root_dir = _module_dir.parent
 
 class SmartJack():
     def __init__(self):
@@ -42,7 +48,7 @@ class SmartJack():
     def get_dest_filepath(self, filepath_list):
         """Access the list of keys in the destination dict and
         prompt the user for input on where to put each item once
-        retrieved by self.file_upd()"""
+        retrieved by self.file_upd()."""
         if len(filepath_list) > len(dest_dict.keys()):
             raise ValueError('Too many items in the supplied list'
                             'of filepaths.')
@@ -60,7 +66,7 @@ class SmartJack():
 
     def file_upd(self):
         """Access the mtgjson host and get the most up to date
-        card list from the Oracle db"""
+        card list from the Oracle db."""
         self.get_dest_filepath()
         print('Retrieving data from source destination; this may'
             'take a minute.')
@@ -81,7 +87,7 @@ class SmartJack():
 
     def dest_test(self, dest, ping_num):
         """Returns TRUE if dest responds to ICMP; may timeout
-        due to dest config"""
+        due to dest config."""
         # Checks for OS compatibility and sets proper parameter
         # definition. 
         param = '-n' if platform.system().lower()=='windows' else '-c'
@@ -99,7 +105,7 @@ class SmartJack():
     def path_iter(self):
         """Iterate over the K:V pairs in the provided dict, added
         the keys as destinations and the values as ping amounts
-        to self.dest_dict"""
+        to self.dest_dict."""
         icmp = False
         # Iterates through the destination dictionary to verify
         # connectivity

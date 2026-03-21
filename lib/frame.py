@@ -1,5 +1,7 @@
 """This module serves mostly as a notebook for tkinter gui work"""
 
+import os
+import sys
 from tkinter import *
 from pathlib import Path
 from tkinter import ttk
@@ -21,12 +23,16 @@ class ScrollLabel(ttk.Frame):
 	displaying lines above/below the focus point into the
 	ScrollLabel."""
 	def __init__(self, parent):
-		"""Initialize ScrollLabel widget"""
+		"""Initialize ScrollLabel widget."""
 		# Initialize reference variables
-		self.parent_frame = ttk.Frame(parent)
+		super().__init__(parent)
 		self.file_enum = []
-		self.filepath = str(_root_dir)+'/bin/ref/scrollable.txt'
-		self.filepath
+		self.filepath = str(_root_dir) + '/bin/ref/scrollable.txt'
+		try:
+			open(self.filepath, 'x', encoding='utf-8')
+		except FileExistsError:
+			os.remove(self.filepath)
+			open(self.filepath, 'x', encoding='utf-8')
 		self.center = 0
 		self.top_bound = self.center - 20 if self.center >= 20 else 0 
 		self.bottom_bound = self.center + 20
@@ -84,7 +90,8 @@ class ScrollLabel(ttk.Frame):
 				41:''}
 		# Initialize the labels for the displayed lines
 		self.label_list = []
-		self.parent_frame.grid_configure(column=0, sticky=(N, W, E))
+		self.grid_configure(column=0, sticky=(N, W, E))
+		self.grid(column=0, row=0)
 
 	def add_line(self, line):
 		"""Add passed line to reference file and return it for reference."""
@@ -94,6 +101,10 @@ class ScrollLabel(ttk.Frame):
 			file.close()
 		self.text_update()
 		return line
+
+	def destroy_file(self):
+		"""Delete the command data storage file."""
+		os.remove(self.filepath)
 
 	def _pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
@@ -201,19 +212,22 @@ class CommandLine():
 		self.cmd_entry.columnconfigure(0, weight=8)
 		self.cmd_entry.rowconfigure(0, weight=8)
 		self.cmd_entry.grid(column=0, row=0, sticky=(W, S))
-		self.text_field.parent_frame.columnconfigure(0, weight=1)
-		self.text_field.parent_frame.rowconfigure(0, weight=1)
-		self.text_field.parent_frame.grid(column=0, row=0, sticky=(N, W, E, S))
+		self.text_field.columnconfigure(0, weight=1)
+		self.text_field.rowconfigure(0, weight=1)
+		self.text_field.grid(column=0, row=0, sticky=(N, W, E, S))
 		# Grid everything with some padding to prevent crowding.
 		for child in self.f_main.winfo_children(): 
 			child.grid_configure(padx=5, pady=5)
+		self.root.protocol('WM_DELETE_WINDOW', self.exit)
 		self.root.bind('<MouseWheel>', self.text_field.on_scroll)
 		self.root.bind('<Return>', self.parse_cmd)
 		self.root.bind('<Escape>', self.exit)
 
 	def exit(self):
 		self.text_field.destroy_file()
-		self.root.destroy()
+		sleep(1)
+		self.root.quit()
+		sleep(1)
 
 	def parse_cmd(self):
 		"""Set the parser.variable to cmd_str value and call the
@@ -225,3 +239,6 @@ class CommandLine():
 	def run_loop(self):
 		"""Run the mainloop."""
 		self.root.mainloop()
+		self.root.destroy()
+		sleep(1)
+		sys.exit(1)

@@ -148,8 +148,8 @@ class nParse():
                 print(f'Character: {nput[num]} \n Char Num: {n}')
             # Check the value of the next character in the input stream
             try:
-                char_match = re.match(alphnum, nput[num + 1])
-                sym_match = re.match(sym, nput[num + 1])
+                char_match = re.match(self.alphnum, nput[num + 1])
+                sym_match = re.match(self.sym, nput[num + 1])
             # Pass through errors from reaching the end of the list
             except IndexError:
                 pass
@@ -169,7 +169,7 @@ class nParse():
             elif nput[num] == ' ' and nput[num - 1] == '-' and nput[n-2] == '-':
                 pass
             # Check if the current character fits alphanum/symbols
-            elif re.match(alphnum, nput[num]) or re.match(sym, nput[num]):
+            elif re.match(self.alphnum, nput[num]) or re.match(self.sym, nput[num]):
                 assembler.append(nput[num])
                 if self.debug:
                     print(f'Assembler: {assembler}')

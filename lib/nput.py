@@ -22,28 +22,26 @@ _root_dir = _module_dir.parent
 
 class Listener():
     """Listener object to accept user input."""
-    def __init__(self, logging):
+    def __init__(self, logging, debug=False):
         self.logging = logging
+        self.debug = debug
         self.output: str = ''
         self.exit = False
         self.helpmode = False
-        # Variables to define regex patterns
-        self.alph = r'[a-zA-Z]'
-        self.num = r'[0-9]'
-        self.alphnum = r'[a-zA-Z0-9]'
-        self.sym = r'[><=]'
-        # Date time management
-        self.datetime = datetime.datetime(2026, 3, 11)
-        self.today = datetime.today()
-        self.log_path = os.getcwd() + f'/logs/{today}.txt'
+        if self.debug:
+            print('Finished initializing Listener().')
             
-    def exit(self):
+    def destroy(self):
         """Close Listener."""
+        if self.debug:
+            print('Destroying Listener().')
         self.exit = True
         return
     
     def listen(self):
         """Begin listening through input object."""
+        if self.debug:
+            print('Enabling command input:')
         if not self.helpmode:
             self.output = input()
             return self.output
@@ -62,7 +60,9 @@ class nParse():
                 variable_mode=False,
                 variable=None,
                 file_mode=False,
-                filepath=None):
+                filepath=None,
+                debug=False):
+    self.debug = debug
         if not listener_mode and not variable_mode and not file_mode:
             raise AttributeError('Mode not defined on initialization.'
                                 'Please set <nParse.listener_mode>, '
@@ -84,9 +84,21 @@ class nParse():
             self.variable = None
         else:
             pass
-        self.debug = False
         self.commands = {}
         self.output = {}
+        # Variables to define regex patterns
+        self.alph = r'[a-zA-Z]'
+        self.num = r'[0-9]'
+        self.alphnum = r'[a-zA-Z0-9]'
+        self.sym = r'[><=]'
+        # Date time management
+        self.now = datetime.datetime.now()
+        self.datetime = self.now.year
+        self.today = self.now.today()
+        self.log_path = os.getcwd() + f'/logs/{self.today}.txt'
+        if self.debug:
+            print('Finished initialing nParse().')
+
 
     def add_command(self, command):
         """Dynamically add commands, where command is a dict with
@@ -95,7 +107,7 @@ class nParse():
 
         Ex: 
         command = {
-                'str_':'-excl',
+                'str_':'-cmd',
                 'func':function(),
                 'arg_count':'0',
                 'default':False
@@ -104,21 +116,36 @@ class nParse():
                 'type_':bool
                 'mod':None
                 }"""
+        if self.debug:
+            print(f'Adding {command} to self.commands')
         self.commands[command['str_']] = command
 
     def commands_action(self):
         """Call the functions passed as command variables to 
         add_argument() before clearing the self.output attribute."""
-        for command in self.commands.values():
-            command['func']()
+# Rework to handle dict of dicts
+        if self.debug:
+            print('Running stored commands.')
+        for command in self.commands and call.keys() in self.output:
+            if  != command['str_']:
+                pass
+            else:
+                command['func']()
 
     def enum(self):
         """Get the length of passed output."""
+# Rework to handle dynamic entry
+        if self.debug:
+            print('Getting the length of the output.')
         return len(self.listener.output)
 
-    def enable_debug(self):
+    def toggle_debug(self):
         """Enable debug strings."""
-        self.debug = True
+        if self.debug:
+            print('Disabling debug.')
+            self.debug = False
+        else:
+            self.debug = True
         return
         
     def parse_input(self):
@@ -126,10 +153,9 @@ class nParse():
         arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]}
         k=command v=arguments."""
 
-        ## To be reworked to respect listener/variable/file mode
-        ## To be reworked to better match Unix convention
-        ## To be reworked to handle commands as dict instead of
-        ## list of attr
+## To be reworked to respect listener/variable/file mode
+## To be reworked to better match Unix convention
+## To be reworked to handle commands as dict instead of list of attr
         if self.listener != None:
             nput = self.listener.listen()
         elif self.variable != None:
@@ -137,7 +163,7 @@ class nParse():
         else:
             with open(self.filepath, 'r', encoding='utf-8') as file:
                 nput = file.read()
-        lenput = len(nput.get())
+        lenput = len(nput)
         # Storage variables for str op
         assembler = []
         last_key: str = ''

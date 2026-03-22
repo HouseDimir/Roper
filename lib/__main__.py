@@ -33,6 +33,10 @@ root = Tk()
 smartjack = SmartJack()
 nput = nParse(variable_mode=True, variable=var_track)
 frame = CommandLine(root, nput)
+commands = {}
+for command in commands:
+        for key, value in command:
+                frame.command[key] = value
 var_track = frame.cmd_str
 roper_cube_list = []
 roper_pack_list = []

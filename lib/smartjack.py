@@ -19,7 +19,8 @@ _module_dir = _current_file.parent
 _root_dir = _module_dir.parent
 
 class SmartJack():
-    def __init__(self):
+    def __init__(self, debug):
+        self.debug = debug
         """Initiate smartjack web access instance."""
         self.test_dict = {'1':'google.com',
                     '2':'4.2.2.2',
@@ -35,10 +36,14 @@ class SmartJack():
         # Assigns the key name from dest_dict.keys() to input()
         # value representing local filepath.
         self.dest_file_path = {}
+        if self.debug:
+            print('Finished initializing SmartJack().')
 
     def add_dest(self, dest, port=None):
         """Populate the destination dict with nodes you wish to
         access. Declare a port number as required."""
+        if self.debug:
+            print(f'Adding {dest} to SmartJack().dest_dict.')
         if port != None:
             dest_dict[dest] = port
         else:
@@ -59,6 +64,8 @@ class SmartJack():
             raise ValueError('Incorrect number of items in filepath'
                             'list supplied.')
         else:
+            if self.debug:
+                print('Building filepath library.')
             for key in dest_dict.keys():
                 dest_file_path[key] = filepath
             return
@@ -68,7 +75,8 @@ class SmartJack():
         """Access the mtgjson host and get the most up to date
         card list from the Oracle db."""
         self.get_dest_filepath()
-        print('Retrieving data from source destination; this may'
+        if self.debug:
+            print('Retrieving data from source destination; this may'
             'take a minute.')
         for key, value in self.dest_file_path:
             with requests.get(key, stream=True) as request:
@@ -78,7 +86,7 @@ class SmartJack():
                     # Pulls raw data to manually decode
                     request_content = request.content
                     detenc = chardet.detect(request_content)
-                    if debug:
+                    if self.debug:
                         print('encoding: ', request.encoding)
                         print('header: ', request.headers)
                         print('size: ', len(request.content))
@@ -91,11 +99,11 @@ class SmartJack():
         # Checks for OS compatibility and sets proper parameter
         # definition. 
         param = '-n' if platform.system().lower()=='windows' else '-c'
-        if debug:
+        if self.debug:
             print('param: ' + param)
         # Defines exact command syntax using var formatting 
         command = ['ping', param, ping_num, dest]
-        if debug:
+        if self.debug:
             print('command: ', command)
             print('command call: ', subprocess.call(command))
         # Gives TRUE/FALSE return based on the output of the
@@ -111,16 +119,16 @@ class SmartJack():
         # connectivity
         for k, v in self.dest_dict:
             while not icmp:
-                if debug:
+                if self.debug:
                     print(f'Attempting to send ' + str(k) 
                             + ' packet(s) to ' + str(v))
                 # Pings each iterate and checks for response
                 if self.dest_test():
                     icmp = True
-                    if debug:
-                     print('ICMP: ', icmp)
+                    if self.debug:
+                        print('ICMP: ', icmp)
                 else:
                     icmp = False
-                    if debug:
+                    if self.debug:
                         print(icmp)
         return icmp

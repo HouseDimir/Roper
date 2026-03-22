@@ -1,3 +1,9 @@
+"""This module is designed to take command-line input to configure
+how to generate either a Cube() object containing a large number
+of card data to be referenced later, or a number of Pack() objects
+from a supplied Cube() object, each of which contains a smaller
+number of cards which can repeat."""
+
 import os
 import re
 import nput
@@ -17,9 +23,10 @@ _root_dir = _module_dir.parent
 
 class Cube():
     """Initialize Cube object to store Pack generation pool."""
-    def __init__(self, inst_id):
+    def __init__(self, inst_id, debug):
         # Basic identifying information
         self.inst_id = str('cube_', inst_id)
+        self.debug = debug
         self.path: str = path
         self.verfd: bool = False
         self.draft: bool = False
@@ -116,10 +123,14 @@ class Cube():
                                     blue_filepath,
                                     white_filepath,
                                     x_filepath]
-
+        if self.debug:
+            print('Finished initializing Cube().')
     
     def add_card(self, card):
         """Add card to the cube path file and card UUID to cube.cube_list."""
+# Rework to update file
+        if self.debug:
+            print(f'Adding {card} to Cube.filepath.')
         with open(self.path, 'w', encoding='utf-8') as cube:
             cube.write(card)
         self.cube_list.append(card[79])
@@ -137,6 +148,8 @@ class Cube():
             raise TypeError(f"Improper argument type passed from nParse.parse_input(): "+arg.type)
         else:
             # Iterate across sorted card lists
+            if self.debug:
+                print('Parsing received commands:')
             for item in self.source_list:
                 item_path = str(cwd) + item
                 with open(item_path, 'r', newline='', encoding='utf-8') as source:
@@ -147,24 +160,34 @@ class Cube():
                             excl = True
                         if excl:
                             # Exclusivity handling
+                            if self.debug:
+                                print('Handling exclusivity.')
                             pass
                         if key == '-gc':
                             # GameChanger card[33]
+                            if self.debug:
+                                print('Handling Gamechangers.')
                             pass
                         for  key in output.keys():
                             # Compare arguments sorted into dicts; Key = str(kwarg) : Value = list(positional, args, space, deliniated)
                             if key == '-kw':
                                 # Keywords card[44]
+                                if self.debug:
+                                    print('Handling Keywords.')
                                 for arg_kw in output['-kw']:
                                     if arg_kw in card[44]:
                                         self.add_card(card)
                             elif key == '-s':
                                 # Set codes card[68]
+                                if self.debug:
+                                    print('Handling Set Codes.')
                                 for arg_set in output['-s']:
                                     if arg_set in card[68]:
                                         self.add_card(card)
                             elif key == '-mv':
                                 # Mana value card[51]
+                                if self.debug:
+                                    print('Handling Mana Values.')
                                 for value in output['-mv']:
                                     try:
                                         digit = int(v)
@@ -198,12 +221,18 @@ class Cube():
                                     raise ValueError("Incorrect symbol passed to -mv.")
                             elif key == '-subt':
                                 # Subtype card[73]
+                                if self.debug:
+                                    print('Handling SubTypes.')
                                 pass
                             elif key == '-supt':
                                 # Supertype card[74]
+                                if self.debug:
+                                    print('Handling SuperTypes.')
                                 pass
                             elif key == '-t':
                                 # Type card[77]
+                                if self.debug:
+                                    print('Handling Types.')
                                 for arg_t in output['-t']:
                                     if arg_t in r[77]:
                                         self.add_card(card)
@@ -219,6 +248,8 @@ class Cube():
         """List cards in Cube.cube_list by Name, Color, and Type info.
         Pass sorted=True to the method to list the cards by their sorted
         values."""
+        if self.debug:
+            print('Listing cards in Cube() file:')
         with open(self.path, 'r', encoding='utf-8', newline='') as cube:
             for line in cube:
                 line = pack.readline()
@@ -231,6 +262,8 @@ class Cube():
         uncommon = []
         rare = []
         mythic =[]
+        if self.debug:
+            print('Sorting Cube() list.')
         with open(self.path, 'r', encoding='utf-8') as cards:
             for cid in self.cube_list:
                 # Check the rarity of each card and append it to the appropriate list
@@ -257,6 +290,8 @@ class Cube():
         and the Cube.filepath. card_id should be card UUID."""
         # Init list to track all cards from cube.path file
         cards = []
+        if self.debug:
+            print('Removing card from Cube().')
         # Remove the UUID from the cube list
         for cid in self.cube_list:
             if card_id == cid:
@@ -282,12 +317,11 @@ class Cube():
     def replace_card(self, *kwargs):
         """Replace one card with another, using UUIDs to identify
         both the target and the replacement."""
+        if self.debug:
+            print('Replacing target cards with replacement cards.')
         for num in range(len(self.replaceCard['args'])):
             for cid in self.cube_list:
-                # Rework this????
-                #
-                #
-                #
+# Rework this to actually work
                 if cid == n[num]:
                     self.remove_card(cid)
                 else:
@@ -300,6 +334,8 @@ class Cube():
         # Counts each iteration when sorting the cards into the respective files
         row_count = 0
         # Opens and loads the csv into a nested set of lists to process
+        if self.debug:
+            print('Sorting through Source data.')
         try:
             with open(source_path, 'r', newline='', encoding='utf-8') as cards:
                 reader = csv.reader(cards)
@@ -385,11 +421,12 @@ class Cube():
                     row_count += 1
 
 class Pack():
-    def __init__(self, inst_id, cube):
+    def __init__(self, inst_id, cube, debug):
         """Initialize Pack object to store cards up to max_cards."""
         # Basic identifying information
         self.inst_id = str('pack_', inst_id)
         self.cube = cube
+        self.debug = debug
         self.path: str = path
         self.verfd: bool = False
         self.draft: bool = True
@@ -450,9 +487,13 @@ class Pack():
         #UUID Lists
         self.pack_list = []
         self.sorted_list = []
+        if self.debug:
+            print('Finished initializing Pack().')
 
     def add_card(self, card):
         """Add card to pack_list and pack.filepath by UUID."""
+        if self.debug:
+            print('Adding card to Pack().')
         with open(self.path, 'w', encoding='utf-8') as pack:
             pack.write(card)
             pack.flush()
@@ -467,6 +508,8 @@ class Pack():
         while generation each pack. they default to True."""
         # Cube should be class cube() object, rare should be bool, ratio_c should be bool, ratio_t should be bool
         # Reset counters
+        if self.debug:
+            print('Generating Pack() data with - ')
         num = 0
         for key in self.color_counter.keys():
             self.color_counter[key] = 0
@@ -476,11 +519,28 @@ class Pack():
             self.type_counter[key] = 0
         # Toggle distribution verification flags
         if not rare:
+            if self.debug:
+                print('-')
             self.rarity_bool = True
+        else:
+            if self.debug:
+                print('Rarity')
         if not ratio_c:
+            if self.debug:
+                print('-')
             self.color_bool = True
+        else:
+            if self.debug:
+                print('Color')
         if not ratio_t:
+            if self.debug:
+                print('-')
             self.type_bool = True
+        else:
+            if self.debug:
+                print('Type')
+        if self.debug:
+            print('constraints.')
         # Random pack generation resource population
         if self.color_bool and self.rarity_bool and self.type_bool:
             with open(self.cube.path,  'r', encoding='utf-8') as cube:
@@ -491,6 +551,8 @@ class Pack():
                 cube.close()
         # Run until all constraints flags true
         while not color_bool or not type_bool or not rare_bool:
+            if self.debug:
+                print('Statrting generation process.')
             while not num == self.max_cards:
                 ## Variables state reset each card pull iteration
                 # Compare cards in pack to rarity ratios
@@ -518,13 +580,17 @@ class Pack():
                 # Track if a card was added to the pack this iteration
                 success = False
                 # Type check the variables
-                if cube.type() ==  'roper.cube' and rare.type() == bool:
+                if cube.type() ==  'roper.Cube' and rare.type() == bool:
                     # Rarity, type, and color constraints
                     if rare and ratio_c and ratio_t:
                         # Read the cube file
+                        if self.debug:
+                            print('Reading Cube().')
                         with open(self.cube.path, 'r', encoding='utf-8') as cube:
                             # Line by line
                             for line in cube:
+                                if self.debug:
+                                    print('Reading card:')
                                 # Turn the line into a list of str objects, comma delineated
                                 card = cube.readline()
                                 ## Make sure the card meets the random selection criterion
@@ -535,6 +601,8 @@ class Pack():
                                         # Check if the color is allowed by distribution constraints
                                         for key in self.color_pool.keys():
                                             if card[10] in self.color_pool:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis[key]:
                                                     pass
                                                 else:
@@ -542,6 +610,8 @@ class Pack():
                                         # Check if the type is allowed by distribution constraints
                                         for key in self.type_pool.keys():
                                             if card[77] in type_pool:
+                                                if self.debug:
+                                                    print('Validating card type.')
                                                 if type_dis[key]:
                                                     pass
                                                 else:
@@ -549,6 +619,8 @@ class Pack():
                                         # Check if the rarity is allowed by distribution constraints
                                         for key in self.rarity_pool.keys():
                                             if card[64] in self.rarity_pool:
+                                                if self.debug:
+                                                    print('Validating card rarity.')
                                                 if rarity_dis[key]:
                                                     pass
                                                 else:
@@ -570,6 +642,8 @@ class Pack():
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in self.cube.mc:
+                                            if self.debug:
+                                                print('Validating card color.')
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -578,6 +652,8 @@ class Pack():
                                         # Check if the type is allowed by distribution constraints
                                         for key in self.type_pool.keys():
                                             if card[77] in type_pool:
+                                                if self.debug:
+                                                    print('Validating card type.')
                                                 if type_dis[key]:
                                                     pass
                                                 else:
@@ -585,6 +661,8 @@ class Pack():
                                         # Check if the rarity is allowed by distribution constraints
                                         for key in self.rarity_pool.keys():
                                             if card[64] in self.rarity_pool:
+                                                if self.debug:
+                                                    print('Validating card rarity.')
                                                 if rarity_dis[key]:
                                                     pass
                                                 else:
@@ -611,12 +689,16 @@ class Pack():
                                 if rarity_select and type_select in card:
                                     for key in self.type_pool.keys():
                                         if card[77] in type_pool:
+                                            if self.debug:
+                                                print('Validating card type.')
                                             if type_dis[key]:
                                                 pass
                                             else:
                                                 approve['type'] = True
                                     for key in self.rarity_pool.keys():
                                         if card[64] in self.rarity_pool:
+                                            if self.debug:
+                                                print('Validating card rarity.')
                                             if rarity_dis[key]:
                                                 pass
                                             else:
@@ -641,11 +723,15 @@ class Pack():
                                     if rarity_select and color_select in card:
                                         for key in self.color_pool.keys():
                                             if card[10] in self.color_pool:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis[key]:
                                                     pass
                                                 else:
                                                     approve['color'] = True
                                             elif card[10] in self.cube.mc:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -653,6 +739,8 @@ class Pack():
                                                     approve['color'] = True
                                         for key in self.rarity_pool.keys():
                                             if card[64] in self.rarity_pool:
+                                                if self.debug:
+                                                    print('Validating card rarity.')
                                                 if rarity_dis[key]:
                                                     pass
                                                 else:
@@ -672,6 +760,8 @@ class Pack():
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in self.cube.mc:
+                                            if self.debug:
+                                                print('Validating card color.')
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -680,6 +770,8 @@ class Pack():
                                         # Check if the rarity is allowed by distribution constraints
                                         for key in self.rarity_pool.keys():
                                             if card[64] in self.rarity_pool:
+                                                if self.debug:
+                                                    print('Validating card rarity.')
                                                 if rarity_dis[keys]:
                                                     pass
                                                 else:
@@ -707,11 +799,15 @@ class Pack():
                                     if color_select and type_select in card:
                                         for key in self.color_pool.keys():
                                             if card[10] in self.color_pool:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis[key]:
                                                     pass
                                                 else:
                                                     approve['color'] = True
                                             elif card[10] in self.cube.mc:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -719,6 +815,8 @@ class Pack():
                                                     approve['color'] = True
                                         for key in self.type_pool.keys():
                                             if card[77] in type_pool:
+                                                if self.debug:
+                                                    print('Validating card type.')
                                                 if type_dis[key]:
                                                     pass
                                                 else:
@@ -740,6 +838,8 @@ class Pack():
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool.keys():
                                         if card[10] in self.cube.mc:
+                                            if self.debug:
+                                                print('Validating card color.')
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -748,6 +848,8 @@ class Pack():
                                         # Check if the type is allowed by distribution constraints
                                         for key in self.type_pool.keys():
                                             if card[77] in self.type_pool:
+                                                if self.debug:
+                                                    print('Validating card type.')
                                                 if type_dis[key]:
                                                     pass
                                                 else:
@@ -775,11 +877,15 @@ class Pack():
                                     if color_select in card:
                                         for key in self.color_pool.keys():
                                             if card[10] in self.color_pool:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis[key]:
                                                     pass
                                                 else:
                                                     approve['color'] = True
                                             elif card[10] in self.cube.mc:
+                                                if self.debug:
+                                                    print('Validating card color.')
                                                 if self.color_dis['mc']:
                                                     pass
                                                 else:
@@ -799,6 +905,8 @@ class Pack():
                                 elif color_select == 'mc':
                                     if 'mc' in self.color_pool:
                                         if card[10] in self.cube.mc:
+                                            if self.debug:
+                                                print('Validating card color.')
                                             if self.color_dis['mc']:
                                                 pass
                                             else:
@@ -807,6 +915,8 @@ class Pack():
                                         # Check if the type is allowed by distribution constraints
                                         for key in self.type_pool:
                                             if card[77] in type_pool:
+                                                if self.debug:
+                                                    print('Validating card type.')
                                                 if type_dis[key]:
                                                     pass
                                                 else:
@@ -814,6 +924,8 @@ class Pack():
                                         # Check if the rarity is allowed by distribution constraints
                                         for key in self.rarity_pool.keys():
                                             if card[64] in self.rarity_pool:
+                                                if self.debug:
+                                                    print('Validating card rarity.')
                                                 if rarity_dis[key]:
                                                     pass
                                                 else:
@@ -840,6 +952,8 @@ class Pack():
                                 if type_select in card:
                                     for key in self.type_pool.keys():
                                         if card[77] in type_pool:
+                                            if self.debug:
+                                                print('Validating card type.')
                                             if type_dis[key]:
                                                 pass
                                             else:
@@ -872,6 +986,8 @@ class Pack():
 
     def get_color_bool(self):
         """Return True if color constraint met."""
+        if self.debug:
+            print('Getting status of Color constraint flags.')
         for key in self.color_dis.keys():
             if self.color_counter[key] >= self.color_ratio_min and self.color_counter[key] <= color_ratio_max:
                 self.color_dis[key] = True
@@ -884,6 +1000,8 @@ class Pack():
 
     def get_rarity_bool(self):
         """Return True if rarirty constraint met."""
+        if self.debug:
+            print('Getting status of Rarity constraint flags.')
         if self.rarity_counter['common'] == self.common_card_ratio:
             self.rarity_dis['common'] = True
         if self.rarity_counter['uncommon'] == self.uncommon_card_ratio:
@@ -897,6 +1015,8 @@ class Pack():
 
     def get_type_bool(self):
         """Return True if type constraint met."""
+        if self.debug:
+            print('Getting status of Type constraint flags.')
         if self.type_counter['creature'] >= self.creature_card_ratio_min:
             self.type_dis['Creature'] = True
         if self.type_counter['Instant'] >= self.instant_ratio_min:
@@ -912,6 +1032,8 @@ class Pack():
         """List cards in Pack.pack_list by Name, Color, and Type info.
         Pass sorted=True to the method to list the cards by their sorted
         values."""
+        if self.debug:
+            print('Listing cards in Pack():')
         with open(self.path, 'r', encoding='utf-8', newline='') as pack:
             for line in pack:
                 line = pack.readline()
@@ -924,6 +1046,8 @@ class Pack():
         uncommon = []
         rare = []
         mythic =[]
+        if self.debug:
+            print('Sorting cards in Pack().packlist.')
         with open(self.path, 'r', encoding='utf-8') as cards:
             for cid in self.cube_list:
                 # Check the rarity of each card and append it to the appropriate list
@@ -948,6 +1072,8 @@ class Pack():
     def remove_card(self, card_id):
         """Remove card from the Pack.pack_list, Pack.sorted_list,
         and the Pack.filepath. card_id should be card UUID."""
+        if self.debug:
+            print(f'Removing {card} from Pack().')
         for cid in self.pack_list:
             if card_id == cid:
                 self.pack_list.remove(cid)
@@ -956,6 +1082,8 @@ class Pack():
     def replace_card(self, *kwargs):
         """Replace one card with another, using UUIDs to identify
         both the target and the replacement."""
+        if self.debug:
+            print('Replacing target cards with replacement cards.')
         for num in range(len(self.replace_card[args])):
             for cid in self.pack_list:
                 if cid == n[num]:

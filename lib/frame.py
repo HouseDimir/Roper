@@ -1,7 +1,9 @@
-"""This module serves mostly as a notebook for tkinter gui work"""
+"""This module defines the ScrollLabel() class and how it functions
+as well as initializes and organized the GUI interface run by __main__"""
 
 import os
 import sys
+from time import *
 from tkinter import *
 from pathlib import Path
 from tkinter import ttk
@@ -22,10 +24,11 @@ class ScrollLabel(ttk.Frame):
 	changing the location of the file that currently has focus,
 	displaying lines above/below the focus point into the
 	ScrollLabel."""
-	def __init__(self, parent):
+	def __init__(self, parent, debug=False):
 		"""Initialize ScrollLabel widget."""
 		# Initialize reference variables
 		super().__init__(parent)
+		self.debug = debug
 		self.file_enum = []
 		self.filepath = str(_root_dir) + '/bin/ref/scrollable.txt'
 		try:
@@ -92,9 +95,13 @@ class ScrollLabel(ttk.Frame):
 		self.label_list = []
 		self.grid_configure(column=0, sticky=(N, W, E))
 		self.grid(column=0, row=0)
+		if self.debug:
+			print('Finished initializing ScrollLabel()')
 
 	def add_line(self, line):
 		"""Add passed line to reference file and return it for reference."""
+		if self.debug:
+			print(f'Writing line to {self.filepath}:\n{line}')
 		with open(self.filepath, 'a', encoding='utf-8') as file:
 			file.write(line)
 			file.flush()
@@ -104,24 +111,36 @@ class ScrollLabel(ttk.Frame):
 
 	def destroy_file(self):
 		"""Delete the command data storage file."""
-		os.remove(self.filepath)
+		try:
+			if debug:
+				print(f'Destroying {self.filepath}')
+			os.remove(self.filepath)
+		except FileNotFoundError:
+			pass
 
 	def _pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
-		return True if pos >= top_bound and pos <= bottom_bound else False
+		bool_ = True if pos >= top_bound and pos <= bottom_bound else False
+		if self.debug:
+			print(f'Checking file position {pos} is valid: {bool_}')
+		return bool_
 
 	def on_scroll(self, event):
 		"""Shift the ScrollLabel center upwards or downwards one
 		based on the event().delta return value"""
 		if event.delta > 0:
-			if len(self.file_enum) == 0:
+			if len(self.file_enum) <= 41:
 				pass
 			else:
+				if self.debug:
+					print('Scrolling command field up once.')
 				for pos in range(0, len(self.file_enum)):
 					if pos == self.focus - 1:
 						self.center = pos
 		else:
 			if center < len(file_enum):
+				if self.debug:
+					print('Scrolling command field down once.')
 				for pos in file_enum:
 					if pos == self.center + 1:
 						self.center = pos
@@ -145,34 +164,45 @@ class ScrollLabel(ttk.Frame):
 			num = 0
 			# Build the total file to be referenced and have the
 			# necessary data selected
+			if self.debug:
+				print('Storing all text, one moment please.')
 			for line in file:
 				self.file_enum.append(num)
 				line = file.readline()
 				text_list.append(line)
 			# Build the lists from which to build the text_dict
+			if self.debug:
+				print('Building constructor containers.')
 			for pos in self.file_enum:
 				while self._pos_check(pos):
 					key_list.append(pos)
 					value_list.append(text_list[pos])
+			if self.debug:
+				print('Zipping dictionaries.')
 			if len(key_list) == len(value_list):
 				self.text_dict = dict(zip(key_list, value_list))
 			else:
 				raise ValueError('Unmatched list length when trying to zip text.')
 			# Build the various labels from the available text_dict
+			if self.debug:
+				print('Constructing Labels.')
 			for num in range(0, len(text_dict.values())) and value in text_dict.values():
 				self.label_list.append(ttk.Label(self.parent_frame, text=f'{value}'))
 			# Set the label positions for the text lines.
+			if self.debug:
+				print('Plotting Labels to local grid.')
 			for num in range(0, len(label_list)) and label in self.label_list:
 				label.grid(column = 0, row=num)
 
 class CommandLine():
 	"""Builds out the gui for the command line portion of the
 	Roper application, with scalable drawing."""
-	def __init__(self, root, nparse):
+	def __init__(self, root, nparse, debug=False):
 		"""Initialize and build a CommandLine() instance
 		Ex. cli = CommandLine(Tk(), nParse())"""
 		# Initialize reference variables 
 		self.exit = False
+		self.debug = debug
 		self.root = root
 		self.parser = nparse
 		self.cmd_str = StringVar()
@@ -182,13 +212,17 @@ class CommandLine():
 		self.bar = ttk.Progressbar(self.f_main)
 		self.f_user = ttk.Frame(self.f_main)
 		self.cmd_bt = ttk.Button(self.f_user, text='Run', command=self.parse_cmd)
-		self.exit_bt = ttk.Button(self.f_user, text='Exit', command=self.exit)
+		self.exit_bt = ttk.Button(self.f_user, text='Exit', command=self.close)
 		self.cmd_entry = ttk.Entry(self.f_user, width=75, textvariable=self.cmd_str)
 		# Initalize custom widget
-		self.text_field = ScrollLabel(self.f_sys)
+		self.text_field = ScrollLabel(self.f_sys, self.debug)
+		if self.debug:
+			print('Finished initializing CommandLine().')
 
 	def draw_fields(self):
 		"""Grid out the various widgets across the application."""
+		if self.debug:
+			print('Plotting objects to grids.')
 		self.root.columnconfigure(0, weight=1)
 		self.root.rowconfigure(0, weight=1)
 		self.f_main.columnconfigure(0, weight=1)
@@ -216,29 +250,39 @@ class CommandLine():
 		self.text_field.rowconfigure(0, weight=1)
 		self.text_field.grid(column=0, row=0, sticky=(N, W, E, S))
 		# Grid everything with some padding to prevent crowding.
+		if self.debug:
+			print('Padding all objects in grid.')
 		for child in self.f_main.winfo_children(): 
 			child.grid_configure(padx=5, pady=5)
-		self.root.protocol('WM_DELETE_WINDOW', self.exit)
+		if self.debug:
+			print('Assigning hotkeys.')
+		self.root.protocol('WM_DELETE_WINDOW', self.close)
 		self.root.bind('<MouseWheel>', self.text_field.on_scroll)
 		self.root.bind('<Return>', self.parse_cmd)
-		self.root.bind('<Escape>', self.exit)
+		self.root.bind('<Escape>', self.close)
+		if self.debug:
+			print('Finished plotting objects to grids.')
 
-	def exit(self):
+	def close(self):
+		if self.debug:
+			print(f'Destroying {self.text_field.filepath}, then quitting root software.')
 		self.text_field.destroy_file()
-		sleep(1)
 		self.root.quit()
 		sleep(1)
 
 	def parse_cmd(self):
 		"""Set the parser.variable to cmd_str value and call the
 		parser.parse_input() method to parse the input value."""
+		if self.debug:
+			print('Transforming input, then parsing to command:string format.')
 		self.parser.variable_mode = True
-		self.parser.variable = self.cmd_str
+		self.parser.variable = self.cmd_str.get()
 		self.parser.parse_input()
 
 	def run_loop(self):
 		"""Run the mainloop."""
+		if self.debug:
+			print('Starting GUI framework, self-destructing upon quit().')
 		self.root.mainloop()
 		self.root.destroy()
-		sleep(1)
 		sys.exit(1)

@@ -16,6 +16,7 @@ from tkinter import ttk
 
 scope = (''
         )
+debug = True
 
 # Absolute pathing variables
 _current_file = Path(__file__).resolve()
@@ -30,9 +31,9 @@ _root_dir = _module_dir.parent
 # down.
 var_track = ''
 root = Tk()
-smartjack = SmartJack()
-nput = nParse(variable_mode=True, variable=var_track)
-frame = CommandLine(root, nput)
+smartjack = SmartJack(debug)
+nput = nParse(variable_mode=True, variable=var_track, debug=debug)
+frame = CommandLine(root, nput, debug)
 commands = {}
 for command in commands:
         for key, value in command:

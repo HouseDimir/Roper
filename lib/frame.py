@@ -103,29 +103,37 @@ class ScrollLabel(ttk.Frame):
 		if self.debug:
 			print(f'Writing line to {self.filepath}:\n{line}')
 		with open(self.filepath, 'a', encoding='utf-8') as file:
-			file.write(line)
+			file.write(line+'\n')
 			file.flush()
 			file.close()
-		self.text_update()
-		return line
+		return
 
 	def destroy_file(self):
 		"""Delete the command data storage file."""
 		try:
-			if debug:
+			if self.debug:
 				print(f'Destroying {self.filepath}')
 			os.remove(self.filepath)
 		except FileNotFoundError:
 			pass
 
+	def empty_list(self):
+		"""Empty the label_list before running self.text_update."""
+		# Empty the current label_list in mem-conserving manner.
+		if self.debug:
+			print('Emptying ScrollLabel().label_list.')
+		for child in self.winfo_children():
+			if child in self.label_list:
+				child.destroy()
+
 	def _pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
-		bool_ = True if pos >= top_bound and pos <= bottom_bound else False
+		bool_ = True if pos >= self.top_bound and pos <= self.bottom_bound else False
 		if self.debug:
 			print(f'Checking file position {pos} is valid: {bool_}')
-		return bool_
+		return True if bool_ else False
 
-	def on_scroll(self, event):
+	def on_scroll(self, event=None):
 		"""Shift the ScrollLabel center upwards or downwards one
 		based on the event().delta return value"""
 		if event.delta > 0:
@@ -170,11 +178,12 @@ class ScrollLabel(ttk.Frame):
 				self.file_enum.append(num)
 				line = file.readline()
 				text_list.append(line)
+				num+=1
 			# Build the lists from which to build the text_dict
 			if self.debug:
 				print('Building constructor containers.')
 			for pos in self.file_enum:
-				while self._pos_check(pos):
+				if self._pos_check(pos):
 					key_list.append(pos)
 					value_list.append(text_list[pos])
 			if self.debug:
@@ -185,14 +194,15 @@ class ScrollLabel(ttk.Frame):
 				raise ValueError('Unmatched list length when trying to zip text.')
 			# Build the various labels from the available text_dict
 			if self.debug:
-				print('Constructing Labels.')
-			for num in range(0, len(text_dict.values())) and value in text_dict.values():
-				self.label_list.append(ttk.Label(self.parent_frame, text=f'{value}'))
-			# Set the label positions for the text lines.
-			if self.debug:
-				print('Plotting Labels to local grid.')
-			for num in range(0, len(label_list)) and label in self.label_list:
-				label.grid(column = 0, row=num)
+				print(f'Constructing {len(self.text_dict.values())} Labels.')
+			for index, value in enumerate(self.text_dict.values()):
+				self.label_list.append(ttk.Label(self, text=f'{value}'))
+			 # Set the label positions for the text lines.	
+			for index, label in enumerate(self.label_list):
+				if self.debug:
+					print(f'Plotting Label <{label}> to local grid position <{index}>')
+				label.grid_configure(column=0, sticky=(W, E))
+				label.grid(column=0, row=index)
 
 class CommandLine():
 	"""Builds out the gui for the command line portion of the
@@ -260,21 +270,25 @@ class CommandLine():
 		self.root.bind('<MouseWheel>', self.text_field.on_scroll)
 		self.root.bind('<Return>', self.parse_cmd)
 		self.root.bind('<Escape>', self.close)
+		self.cmd_entry.focus_set()
 		if self.debug:
 			print('Finished plotting objects to grids.')
 
-	def close(self):
+	def close(self, event=None):
 		if self.debug:
-			print(f'Destroying {self.text_field.filepath}, then quitting root software.')
+			print('Quitting root software.')
 		self.text_field.destroy_file()
 		self.root.quit()
 		sleep(1)
 
-	def parse_cmd(self):
+	def parse_cmd(self, event=None):
 		"""Set the parser.variable to cmd_str value and call the
 		parser.parse_input() method to parse the input value."""
 		if self.debug:
-			print('Transforming input, then parsing to command:string format.')
+			print('Transforming input, then parsing to <command:*args> format.')
+		self.text_field.add_line(self.cmd_str.get())
+		self.text_field.empty_list()
+		self.text_field.text_update()
 		self.parser.variable_mode = True
 		self.parser.variable = self.cmd_str.get()
 		self.parser.parse_input()

@@ -62,7 +62,7 @@ class nParse():
                 file_mode=False,
                 filepath=None,
                 debug=False):
-    self.debug = debug
+        self.debug = debug
         if not listener_mode and not variable_mode and not file_mode:
             raise AttributeError('Mode not defined on initialization.'
                                 'Please set <nParse.listener_mode>, '
@@ -90,7 +90,7 @@ class nParse():
         self.alph = r'[a-zA-Z]'
         self.num = r'[0-9]'
         self.alphnum = r'[a-zA-Z0-9]'
-        self.sym = r'[><=]'
+        self.sym = r'[><=\']'
         # Date time management
         self.now = datetime.datetime.now()
         self.datetime = self.now.year
@@ -126,8 +126,8 @@ class nParse():
 # Rework to handle dict of dicts
         if self.debug:
             print('Running stored commands.')
-        for command in self.commands and call.keys() in self.output:
-            if  != command['str_']:
+        for command in self.commands and call in self.output:
+            if command['str_'] not in call.keys():
                 pass
             else:
                 command['func']()
@@ -171,7 +171,7 @@ class nParse():
         # Iterate over the length of the nput to perform input phrase separation by space
         for num in range(0, lenput):
             if self.debug:
-                print(f'Character: {nput[num]} \n Char Num: {n}')
+                print(f'Character: {nput[num]} \n Char Num: {num}')
             # Check the value of the next character in the input stream
             try:
                 char_match = re.match(self.alphnum, nput[num + 1])

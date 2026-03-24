@@ -152,7 +152,6 @@ class nParse():
         """Break the input into the command and its associated
         arguments in a {k1:[v1.1,v1.2,v1.3], k2:[v2.1,v2.2,v2.3]}
         k=command v=arguments."""
-
 ## To be reworked to respect listener/variable/file mode
 ## To be reworked to better match Unix convention
 ## To be reworked to handle commands as dict instead of list of attr

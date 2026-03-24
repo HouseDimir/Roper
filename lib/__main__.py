@@ -36,8 +36,7 @@ nput = nParse(variable_mode=True, variable=var_track, debug=debug)
 frame = CommandLine(root, nput, debug)
 commands = {}
 for command in commands:
-        for key, value in command:
-                frame.command[key] = value
+        frame.parser.add_command(command)
 var_track = frame.cmd_str
 roper_cube_list = []
 roper_pack_list = []

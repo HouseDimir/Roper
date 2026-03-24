@@ -93,6 +93,7 @@ class ScrollLabel(ttk.Frame):
 				41:''}
 		# Initialize the labels for the displayed lines
 		self.label_list = []
+		self.widgets = self.grid_slaves()
 		self.grid_configure(column=0, sticky=(N, W, E))
 		self.grid(column=0, row=0)
 		if self.debug:
@@ -117,14 +118,14 @@ class ScrollLabel(ttk.Frame):
 		except FileNotFoundError:
 			pass
 
-	def empty_list(self):
+	def empty_grid(self):
 		"""Empty the label_list before running self.text_update."""
 		# Empty the current label_list in mem-conserving manner.
 		if self.debug:
 			print('Emptying ScrollLabel().label_list.')
 		for child in self.winfo_children():
-			if child in self.label_list:
-				child.destroy()
+			if child in self.label_list and child in self.widgets:
+				child.grid_remove()
 
 	def _pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
@@ -146,13 +147,13 @@ class ScrollLabel(ttk.Frame):
 					if pos == self.focus - 1:
 						self.center = pos
 		else:
-			if center < len(file_enum):
+			if self.center < len (self.file_enum):
 				if self.debug:
 					print('Scrolling command field down once.')
-				for pos in file_enum:
+				for pos in self.file_enum:
 					if pos == self.center + 1:
 						self.center = pos
-			elif center == len(file_enum):
+			elif self.center == len(self.file_enum):
 				pass
 			else:
 				raise ValueError(f'{self}.focus escaped upper bounds.')
@@ -175,9 +176,12 @@ class ScrollLabel(ttk.Frame):
 			if self.debug:
 				print('Storing all text, one moment please.')
 			for line in file:
+				if self.debug:
+					print(f'{line}')
 				self.file_enum.append(num)
-				line = file.readline()
 				text_list.append(line)
+				if self.debug:
+					print(text_list)
 				num+=1
 			# Build the lists from which to build the text_dict
 			if self.debug:
@@ -187,7 +191,9 @@ class ScrollLabel(ttk.Frame):
 					key_list.append(pos)
 					value_list.append(text_list[pos])
 			if self.debug:
-				print('Zipping dictionaries.')
+				print('Zipping dictionaries. \n'
+					f'Key List: {key_list} \n'
+					f'Values List: {value_list}')
 			if len(key_list) == len(value_list):
 				self.text_dict = dict(zip(key_list, value_list))
 			else:
@@ -195,14 +201,27 @@ class ScrollLabel(ttk.Frame):
 			# Build the various labels from the available text_dict
 			if self.debug:
 				print(f'Constructing {len(self.text_dict.values())} Labels.')
-			for index, value in enumerate(self.text_dict.values()):
-				self.label_list.append(ttk.Label(self, text=f'{value}'))
-			 # Set the label positions for the text lines.	
+				print(self.text_dict)
+			for key, value in self.text_dict.items():
+				if self.debug:
+					print(f'value: {value}\nvalue type: {type(value)}')
+					print(f'key: {key}\nkey type: {type(key)}')
+					print(self.label_list)
+				try:
+					if line not in self.label_list:
+						self.label_list.append(ttk.Label(self, text=f'{line}'))
+					else:
+						pass
+				except IndexError:
+					self.label_list.append(ttk.Label(self, text=f'{line}'))
+			# Set the label positions for the text lines.	
 			for index, label in enumerate(self.label_list):
 				if self.debug:
 					print(f'Plotting Label <{label}> to local grid position <{index}>')
-				label.grid_configure(column=0, sticky=(W, E))
-				label.grid(column=0, row=index)
+				if label not in self.widgets:
+					label.grid(column=0, row=index, sticky=(W, E))
+				else:
+					label.grid()
 
 class CommandLine():
 	"""Builds out the gui for the command line portion of the
@@ -285,9 +304,9 @@ class CommandLine():
 		"""Set the parser.variable to cmd_str value and call the
 		parser.parse_input() method to parse the input value."""
 		if self.debug:
-			print('Transforming input, then parsing to <command:*args> format.')
+			print('Transforming input, then parsing to <{command:{*args}}> format.')
 		self.text_field.add_line(self.cmd_str.get())
-		self.text_field.empty_list()
+		self.text_field.empty_grid()
 		self.text_field.text_update()
 		self.parser.variable_mode = True
 		self.parser.variable = self.cmd_str.get()

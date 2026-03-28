@@ -36,63 +36,13 @@ class ScrollLabel(ttk.Frame):
 		except FileExistsError:
 			os.remove(self.filepath)
 			open(self.filepath, 'x', encoding='utf-8')
-		self.center = 0
-		self.top_bound = self.center - 20 if self.center >= 20 else 0 
-		self.bottom_bound = self.center + 20
-		self.text_dict = {0:'',
-				1:'',
-				2:'',
-				3:'',
-				4:'',
-				5:'',
-				6:'',
-				7:'',
-				8:'',
-				9:'',
-				10:'',
-				11:'',
-				12:'',
-				13:'',
-				14:'',
-				15:'',
-				16:'',
-				17:'',
-				18:'',
-				19:'',
-				20:'',
-				21:'',
-				22:'',
-				23:'',
-				24:'',
-				25:'',
-				26:'',
-				27:'',
-				28:'',
-				29:'',
-				30:'',
-				31:'',
-				32:'',
-				33:'',
-				34:'',
-				35:'',
-				36:'',
-				37:'',
-				38:'',
-				39:'',
-				30:'',
-				31:'',
-				32:'',
-				33:'',
-				34:'',
-				35:'',
-				36:'',
-				37:'',
-				38:'',
-				39:'',
-				40:'',
-				41:''}
-		# Initialize the labels for the displayed lines
-		self.label_list = []
+		self.center_line = 0
+		self.top_bound = self.center_line - 20 if self.center_line >= 20 else 0 
+		self.bottom_bound = self.center_line + 20
+		# Initialize the label for the displayed lines
+		self.str_label = ''
+		self.sys_txt = ttk.Label(self, text=f'{self.str_label}')
+		self.sys_txt.grid(column=0, row=0, sticky=(W, E))
 		self.widgets = self.grid_slaves()
 		self.grid_configure(column=0, sticky=(N, W, E))
 		self.grid(column=0, row=0)
@@ -118,16 +68,15 @@ class ScrollLabel(ttk.Frame):
 		except FileNotFoundError:
 			pass
 
-	def empty_grid(self):
+	def clear_labels(self):
 		"""Empty the label_list before running self.text_update."""
 		# Empty the current label_list in mem-conserving manner.
 		if self.debug:
 			print('Emptying ScrollLabel().label_list.')
 		for child in self.winfo_children():
-			if child in self.label_list and child in self.widgets:
-				child.grid_remove()
+			child.destroy()
 
-	def _pos_check(self, pos):
+	def pos_check(self, pos):
 		"""Return True when the passed int is inside the bounds."""
 		bool_ = True if pos >= self.top_bound and pos <= self.bottom_bound else False
 		if self.debug:
@@ -139,21 +88,23 @@ class ScrollLabel(ttk.Frame):
 		based on the event().delta return value"""
 		if event.delta > 0:
 			if len(self.file_enum) <= 41:
+				if self.debug:
+					print('Too few commands to scroll.')
 				pass
 			else:
 				if self.debug:
 					print('Scrolling command field up once.')
-				for pos in range(0, len(self.file_enum)):
-					if pos == self.focus - 1:
-						self.center = pos
+				for pos in self.file_enum:
+					if pos == (self.center_line - 1):
+						self.center_line -= 1
 		else:
-			if self.center < len (self.file_enum):
+			if self.center_line < len (self.file_enum):
 				if self.debug:
 					print('Scrolling command field down once.')
 				for pos in self.file_enum:
-					if pos == self.center + 1:
-						self.center = pos
-			elif self.center == len(self.file_enum):
+					if pos == (self.center_line + 1):
+						self.center_line += 1
+			elif self.center_line == len(self.file_enum):
 				pass
 			else:
 				raise ValueError(f'{self}.focus escaped upper bounds.')
@@ -169,8 +120,6 @@ class ScrollLabel(ttk.Frame):
 		# Open the file containing all content printed to the
 		# system console
 		with open(self.filepath, 'r', encoding='utf-8') as file:
-			self.file_enum = []
-			num = 0
 			# Build the total file to be referenced and have the
 			# necessary data selected
 			if self.debug:
@@ -178,50 +127,19 @@ class ScrollLabel(ttk.Frame):
 			for line in file:
 				if self.debug:
 					print(f'{line}')
-				self.file_enum.append(num)
 				text_list.append(line)
 				if self.debug:
-					print(text_list)
-				num+=1
-			# Build the lists from which to build the text_dict
-			if self.debug:
-				print('Building constructor containers.')
-			for pos in self.file_enum:
-				if self._pos_check(pos):
-					key_list.append(pos)
-					value_list.append(text_list[pos])
-			if self.debug:
-				print('Zipping dictionaries. \n'
-					f'Key List: {key_list} \n'
-					f'Values List: {value_list}')
-			if len(key_list) == len(value_list):
-				self.text_dict = dict(zip(key_list, value_list))
-			else:
-				raise ValueError('Unmatched list length when trying to zip text.')
-			# Build the various labels from the available text_dict
-			if self.debug:
-				print(f'Constructing {len(self.text_dict.values())} Labels.')
-				print(self.text_dict)
-			for key, value in self.text_dict.items():
-				if self.debug:
-					print(f'value: {value}\nvalue type: {type(value)}')
-					print(f'key: {key}\nkey type: {type(key)}')
-					print(self.label_list)
-				try:
-					if line not in self.label_list:
-						self.label_list.append(ttk.Label(self, text=f'{line}'))
-					else:
-						pass
-				except IndexError:
-					self.label_list.append(ttk.Label(self, text=f'{line}'))
-			# Set the label positions for the text lines.	
-			for index, label in enumerate(self.label_list):
-				if self.debug:
-					print(f'Plotting Label <{label}> to local grid position <{index}>')
-				if label not in self.widgets:
-					label.grid(column=0, row=index, sticky=(W, E))
-				else:
-					label.grid()
+					print(f'text_list: {text_list}\n')
+			for index, str_ in enumerate(text_list):
+				if self.pos_check(index):
+					if self.debug:
+						print(f'{self.str_label}\n'
+							f'{index}\n'
+							f'{str_}\n')
+					self.str_label = self.str_label + f'{str_}\n'
+					if self.debug:
+						print(f'{self.str_label}')
+			self.sys_txt.configure(text=f'{self.str_label}')
 
 class CommandLine():
 	"""Builds out the gui for the command line portion of the
@@ -280,8 +198,14 @@ class CommandLine():
 		self.text_field.grid(column=0, row=0, sticky=(N, W, E, S))
 		# Grid everything with some padding to prevent crowding.
 		if self.debug:
-			print('Padding all objects in grid.')
-		for child in self.f_main.winfo_children(): 
+
+			print('Padding all objects in grid.\n'
+				f'{self.f_main.winfo_children()}')
+		for child in self.f_main.winfo_children():
+			# if child == self.text_field:
+			# 	child.grid_configure(padx=1, pady=5)
+			# else:
+			# 	child.grid_configure(padx=5, pady=5)
 			child.grid_configure(padx=5, pady=5)
 		if self.debug:
 			print('Assigning hotkeys.')
@@ -306,7 +230,7 @@ class CommandLine():
 		if self.debug:
 			print('Transforming input, then parsing to <{command:{*args}}> format.')
 		self.text_field.add_line(self.cmd_str.get())
-		self.text_field.empty_grid()
+		self.text_field.clear_labels()
 		self.text_field.text_update()
 		self.parser.variable_mode = True
 		self.parser.variable = self.cmd_str.get()

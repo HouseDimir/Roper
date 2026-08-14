@@ -8,7 +8,8 @@ from tkinter import *
 from pathlib import Path
 from tkinter import ttk
 
-scope = (''
+# Definition of goals and intention of the module
+__scope = (''
         )
 # Absolute pathing variables
 _current_file = Path(__file__).resolve()
@@ -36,16 +37,20 @@ class ScrollLabel(ttk.Frame):
 		except FileExistsError:
 			os.remove(self.filepath)
 			open(self.filepath, 'x', encoding='utf-8')
-		self.center_line = 0
-		self.top_bound = self.center_line - 20 if self.center_line >= 20 else 0 
-		self.bottom_bound = self.center_line + 20
+#		self.center_line = 0
+#		self.top_bound = self.center_line - 20 if self.center_line >= 20 else 0 
+#		self.bottom_bound = self.center_line + 20
 		# Initialize the label for the displayed lines
+        self.cFrame = ttk.Canvas(self, parent)
+        self.cFrame.grid(column=0, row=0, sticky=(N, E, W, S))
 		self.str_label = ''
-		self.sys_txt = ttk.Label(self, text=f'{self.str_label}')
-		self.sys_txt.grid(column=0, row=0, sticky=(W, E))
+		self.sys_txt = ttk.Label(self.cFrame, text=f'{self.str_label}')
+		self.sys_txt.grid(column=0, row=0, sticky=(N, E, W, S))
+        self.scrollbar = ttk.Scrollbar(self.cFrame)
+        self.scrollbar.grid(column=1,row=0, sticky=(N, E, W, S))
 		self.widgets = self.grid_slaves()
-		self.grid_configure(column=0, sticky=(N, W, E))
-		self.grid(column=0, row=0)
+		self.grid_configure(column=0, sticky=(N, E, W, S))
+		self.cFrame.grid(column=0, row=0)
 		if self.debug:
 			print('Finished initializing ScrollLabel()')
 
@@ -70,7 +75,6 @@ class ScrollLabel(ttk.Frame):
 
 	def clear_labels(self):
 		"""Empty the label_list before running self.text_update."""
-		# Empty the current label_list in mem-conserving manner.
 		if self.debug:
 			print('Emptying ScrollLabel().label_list.')
 		for child in self.winfo_children():
@@ -152,16 +156,24 @@ class CommandLine():
 		self.debug = debug
 		self.root = root
 		self.parser = nparse
+        # Track active cmd string variable
 		self.cmd_str = StringVar()
 		# Initialize ttk widgets
+        # root frame
 		self.f_main = ttk.Frame(self.root)
+        # background for active frame widgets
 		self.f_sys = ttk.Frame(self.f_main)
+        # progress bar widget
 		self.bar = ttk.Progressbar(self.f_main)
+        # user manipulationg frame
 		self.f_user = ttk.Frame(self.f_main)
+        # cmd exec btn widget
 		self.cmd_bt = ttk.Button(self.f_user, text='Run', command=self.parse_cmd)
+        # self.exit btn widget
 		self.exit_bt = ttk.Button(self.f_user, text='Exit', command=self.close)
+        # user txt box widget
 		self.cmd_entry = ttk.Entry(self.f_user, width=75, textvariable=self.cmd_str)
-		# Initalize custom widget
+		# Initalize custom scrolling txt box widget
 		self.text_field = ScrollLabel(self.f_sys, self.debug)
 		if self.debug:
 			print('Finished initializing CommandLine().')

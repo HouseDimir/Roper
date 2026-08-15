@@ -38,3 +38,32 @@ Required Arguments
         -spt    Space deliniated Keywords; Niche; Declare supertypes you wish to search for
         -t    Space deliniated keywords; Declare the card types you wish to search for; May not be compatible with --kw in some instances
 
+
+
+Timeline:
+The following contains basic plans to expand and engineer functionality in the roper modules, as well as plans for the package as a whole.
+
+Package Goal:
+A cohesive piece of software that fluidly and efficiently utilizes machine resources and an external connection to draw a series of files from mtgjson.com. It then aims to take the data and sift it into small batches of card data (known as a Cube) to be chosen from at will or used to dynamically generate Draft Packs for users to host home-made draft games with friends.
+
+nPut module:
+Take either dynamic user input or file input and process the text string into a series of commands and attributes to guide the behavior of the various functions called by the argument parser.
+
+smartjack module:
+Dynamically contact listed destination addresses and then pull the data available from the web page to store as directed by kwargs.
+
+roper module:
+Access card database and process command input to output a series of arrays comprised of the card data based on the search terms entered. Should be able to accept Scryfall style search terms, with some exceptions, and should be able to accept lists of cards extracted from a file input by the user. 
+
+frame module:
+Should contain a simple and usable UI to allow basic CLI interaction with the system. Minimal functionality to create minimal bugs.
+
+__main__ module:
+Accurately commented and directed module which clearly and succinctly calls and iterates through the various modules accompanying the package.
+
+Expected UI ver 0.0.1a - 1 Oct, '26
+Expected nPut & smartjack ver 0.0.1a - 1, Jan '27
+Expected roper ver 0.0.1a - 16 Apr, '27
+
+
+Last Update 15 Aug, '26

@@ -1,0 +1,49 @@
+:root {
+  --section-border: #efefef;
+  font-family: "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 12pt;
+}
+
+html, body, h1, h2, h3, h4, h5, h6, p {
+  line-height: 2;
+  margin: 0;
+  padding: 0;
+}
+
+.application-header {
+  border-bottom: 4px solid var(--section-border);
+  padding: 1em;
+  margin: 1em;
+}
+
+.application-header .title {
+  font-size: 32pt;
+  font-weight: bold;
+  font-variant: small-caps;
+}
+
+.application-header .subtitle {
+  font-style: italic;
+}
+
+main {
+  padding: 1em;
+  margin: 1em;
+}
+
+main h1 {
+  font-size: 24pt;
+  margin-bottom: 0.5em;
+  border-bottom: 2px solid var(--section-border);
+}
+
+main h2 {
+  font-size: 16pt;
+  margin: 1em 0;
+  border-bottom: 2px solid var(--section-border);
+  border-bottom: 
+}
+
+form div {
+  margin-left: 0.5em;
+}

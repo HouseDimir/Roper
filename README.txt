@@ -82,9 +82,26 @@ Should contain a simple and usable UI to allow basic CLI interaction with the sy
 __main__ module:
 Accurately commented and directed module which clearly and succinctly calls and iterates through the various modules accompanying the package.
 
+web server (roper_server.py):
+
+    Setup:
+
+    python -m venv venv
+    ./venv/bin/pip install --upgrade pip
+    ./venv/bin/pip install --requirement requirements.txt
+
+    Run:
+
+    ./venv/bin/flask --app roper_server run
+
+    Use:
+
+    Open http://localhost:5000/ in your browser
+    Standard output (`print()`) will go to the console
+
 Expected UI ver 0.0.1a - 1 Oct, '26
 Expected nPut & smartjack ver 0.0.1a - 1, Jan '27
 Expected roper ver 0.0.1a - 16 Apr, '27
 
 
-Last Update 15 Aug, '26
+Last Update 21 Sep, '26

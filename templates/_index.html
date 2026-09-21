@@ -1,0 +1,99 @@
+<!doctype html>
+
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>Roper | MtG Cube Tool</title>
+    <link rel="stylesheet" href="static/theme.css">
+  </head>
+  <body>
+    <header class="application-header">
+      <div>
+        <strong class="title">Roper</strong>
+      </div>
+      <div>
+        <span class="subtitle">MtG Cube Tool</span>
+      </div>
+    </header>
+    <main>
+      <h1>Select the options for your cube</h1>
+      <form action="/generate" method="POST">
+        <h2>General Options</h2>
+
+        <div>
+          <label for="is-exclusive">Match only cards which match ALL constraints</label>
+          <input id="is-exclusive" name="is-exclusive" type="checkbox">
+        </div>
+
+        <div>
+          <label for="mode">Operation mode</label>
+          <select id="mode" name="mode">
+            <option value="add">Add</option>
+            <option value="clr">Clear</option>
+            <option value="rmv">Remove</option>
+            <option value="shw">Show</option>
+            <option value="upd">Update</option>
+          </select>
+        </div>
+
+        <h2>Card Selection Options</h2>
+
+        <div>
+          <label for="is-rarity-balanced">Balance rarity distribution</label>
+          <input id="is-rarity-balanced" name="is-rarity-balanced" type="checkbox" checked>
+        </div>
+
+        <div>
+          <label for="allow-gamechangers">Allow EDH <a href="https://scryfall.com/search?q=is%3Agamechanger">Game Changers</a></label>
+          <input id="allow-gamechangers" name="allow-gamechangers" type="checkbox">
+        </div>
+
+        <div>
+          <label for="cube-size">Number of cards in the cube (changes number of cards per pack for draft)</label>
+          <input id="cube-size" name="cube-size" type="number" placeholder="e.g. 360" value="360" required>
+        </div>
+
+        <div>
+          <label for="keywords">Keyword Abilities (space-separated)</label>
+          <input id="keywords" name="keywords" type="text" placeholder="e.g. vigilance flying haste">
+        </div>
+
+        <div>
+          <label for="set-codes">Allowed Sets (space-separated)</label>
+          <input id="set-codes" name="set-codes" type="text" placeholder="e.g. iko eoe fin">
+        </div>
+
+        <div>
+          <label for="supertypes">Allowed Supertypes (space-separated)</label>
+          <input id="supertypes" name="supertypes" type="text" placeholder="e.g. land artifact legendary">
+        </div>
+
+        <div>
+          <label for="subtypes">Allowed Subtypes (space-separated)</label>
+          <input id="subtypes" name="subtypes" type="text" placeholder="e.g. elf lesson forest">
+        </div>
+
+        <h2>Draft Options</h2>
+
+        <div>
+          <label for="is-draft">Generate draft packs</label>
+          <input id="is-draft" name="is-draft" type="checkbox">
+        </div>
+
+        <div>
+          <label for="draft-packs">Number of draft packs to generate</label>
+          <input id="draft-packs" name="draft-packs" type="number" placeholder="e.g. 24" value="24" required>
+        </div>
+
+        <div>
+          <label for="draft-cards-per-pack">Number of cards per draft pack</label>
+          <input id="draft-cards-per-pack" name="draft-cards-per-pack" type="number" placeholder="e.g. 15" value="15" required>
+        </div>
+
+        <div>
+          <input type="submit" value="Submit">
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

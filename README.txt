@@ -2,6 +2,27 @@ Author: Jessie Kovacs
 
 This is a Python based data sorting system designed to separate variable length card lists into Draft Booster packs. To initiate setup, open a command prompt and type "py roper -setup". When running the -cube command use the Cube commands below to define what cards will be searched for. When running the -draft command use the Pack commands below to define how the pack will be generated. 
 
+----------//To-Do\\----------          
+       ===|Legend|===        
+| √ | - Completed - | Alt+251/9723 |
+| ○ | - In Progress - | Alt+9 |
+| x | - Deprecation Removal - | 'x' key |
+| ~ | - Admin Task - | Shift+'`' key |
+| § | - Functionality Task - | Alt+21 |
+        ===|Tasks|===          
+| ~ | 1. Commentation pass __main__.py
+| ~ | 2. Documentation pass __main__.py
+| ~ | 3. Commentation pass frame.py
+| ~ | 4. Documentation pass frame.py
+| ~ | 5. Commentation pass nput.py
+| ~ | 6. Documentation pass nput.py
+| ~ | 7. Commentation pass roper.py
+| ~ | 8. Documentation pass roper.py
+| ~ | 9. Commentation smartjack.py
+| ~ | 10. Documentation pass smartjack.py
+| ~ | 11. Planning Session - Functionality, Bloat Removal, Priorities, Stretch Goals
+
+
 Documentation:
 Each of the available commands are listed below, as well as a short example of how to use them. For the full list of available keywords or arguments passable to one of the selection commands, see the Documentation.txt
 

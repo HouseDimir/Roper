@@ -155,23 +155,22 @@ class CommandLine():
 		self.exit = False
 		self.debug = debug
 		self.root = root
+		self.root.title('Roper')
 		self.parser = nparse
-        # Track active cmd string variable
+        	# Track active cmd string variable
 		self.cmd_str = StringVar()
 		# Initialize ttk widgets
-        # root frame
-		self.f_main = ttk.Frame(self.root)
-        # background for active frame widgets
+        	# background for active frame widgets
 		self.f_sys = ttk.Frame(self.f_main)
-        # progress bar widget
+        	# progress bar widget
 		self.bar = ttk.Progressbar(self.f_main)
-        # user manipulationg frame
+        	# user manipulationg frame
 		self.f_user = ttk.Frame(self.f_main)
-        # cmd exec btn widget
+        	# cmd exec btn widget
 		self.cmd_bt = ttk.Button(self.f_user, text='Run', command=self.parse_cmd)
-        # self.exit btn widget
+        	# self.exit btn widget
 		self.exit_bt = ttk.Button(self.f_user, text='Exit', command=self.close)
-        # user txt box widget
+        	# user txt box widget
 		self.cmd_entry = ttk.Entry(self.f_user, width=75, textvariable=self.cmd_str)
 		# Initalize custom scrolling txt box widget
 		self.text_field = ScrollLabel(self.f_sys, self.debug)
